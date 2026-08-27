@@ -525,9 +525,8 @@ function updateCamera(dt){
 /* =========================================================================
    STATIONS-INTERAKTION (Annäherung im Hub)
    ========================================================================= */
-const interactBtn = document.getElementById('interactBtn');
 const roamHint = document.getElementById('roamHint');
-let nearStationIdx = null;
+const ARRIVE_RANGE = 5.5;
 
 function updateProximity(){
   // Marker-Sprite (schwebendes "!") nur über der aktuell aktiven Station zeigen und sanft schweben lassen
@@ -539,25 +538,19 @@ function updateProximity(){
     if(s.marker.visible) s.marker.position.y = 2.9 + Math.sin(t*2.4)*0.15;
   });
 
-  if(mode !== 'hub'){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
-  if(activeIdx >= STATIONS.length){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
+  if(mode !== 'hub'){ roamHint.style.display = 'none'; return; }
+  if(activeIdx >= STATIONS.length){ roamHint.style.display = 'none'; return; }
   const s = stationGroups[activeIdx];
-  if(!s.grp.visible || s.caught){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
+  if(!s.grp.visible || s.caught || s.triggered){ roamHint.style.display = 'none'; return; }
   const d = player.position.distanceTo(s.grp.position);
-  if(d < 4.2){
-    nearStationIdx = activeIdx;
-    interactBtn.style.display = 'block';
-    interactBtn.textContent = '✨ ' + s.st.challenge.label + ' starten';
+  if(d < ARRIVE_RANGE){
+    s.triggered = true;
     roamHint.style.display = 'none';
+    window.FTK_startChallenge(activeIdx);
   }else{
-    nearStationIdx = null;
-    interactBtn.style.display = 'none';
     roamHint.style.display = 'block';
   }
 }
-interactBtn.addEventListener('click', ()=>{
-  if(nearStationIdx !== null) window.FTK_startChallenge(nearStationIdx);
-});
 
 /* Popup-Animation für neu erschienene Stationen */
 function updateReveals(dt){

@@ -140,18 +140,6 @@
     font-weight:700; font-size:16px; background:rgba(20,15,25,.5); padding:6px 14px; border-radius:999px;
   }
 
-  #interactBtn{
-    position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 200px); transform:translateX(-50%);
-    z-index:7; display:none; background:#fff; color:#20232b; border:none; border-radius:999px;
-    padding:14px 22px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
-    font-weight:700; font-size:14.5px; box-shadow:0 6px 20px rgba(0,0,0,.35), 0 0 0 rgba(248,16,177,.5);
-    cursor:pointer; animation:btnPulse 1.4s ease-in-out infinite;
-  }
-  @keyframes btnPulse{
-    0%,100%{transform:translateX(-50%) scale(1); box-shadow:0 6px 20px rgba(0,0,0,.35), 0 0 0 rgba(248,16,177,.5);}
-    50%{transform:translateX(-50%) scale(1.055); box-shadow:0 6px 24px rgba(0,0,0,.4), 0 0 18px rgba(248,16,177,.55);}
-  }
-
   #roamHint{
     position:absolute; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom,0px) + 200px);
     z-index:6; display:none; text-align:center; color:#fff; font-size:13.5px; max-width:78vw;
@@ -314,7 +302,6 @@
     <p id="challengeHint"></p>
     <p id="challengeCount"></p>
     <p id="roamHint">✨ Ein Traubenwesen ist zu spüren! Lauft zum leuchtenden Kristall mit dem „!“ darüber.</p>
-    <button id="interactBtn"></button>
     <div id="joyBase"><div id="joyNub"></div></div>
     <div id="dpad">
       <button id="dpad-up" class="up">▲</button>

@@ -7,7 +7,6 @@ window.FTK_startChallenge = function(idx){
   const st = STATIONS[idx];
   document.getElementById('challengeHint').textContent = st.challenge.hint;
   document.getElementById('challengeHint').style.display = 'block';
-  document.getElementById('interactBtn').style.display = 'none';
   if(st.challenge.type === 'simon') startSimon(idx);
   else if(st.challenge.type === 'collect') startCollect(idx);
   else if(st.challenge.type === 'climb') startClimb(idx);
