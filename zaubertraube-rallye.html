@@ -361,6 +361,9 @@
       <li>Bildschirm am <b>Stand zeigen</b> und Belohnung abholen. 🎉</li>
     </ol>
     <button class="btn secondary" onclick="document.getElementById('helpBackdrop').classList.remove('show')">Verstanden</button>
+    <p style="text-align:center; margin:14px 0 0;">
+      <a href="javascript:void(0)" onclick="resetGame()" style="color:var(--ink-muted); font-size:12.5px; text-decoration:underline;">Von vorne beginnen</a>
+    </p>
   </div>
 </div>
 
@@ -380,8 +383,8 @@
 </div>
 
 <script src="three.min.js"></script>
-<script src="world.js?v=10"></script>
-<script src="challenges.js?v=10"></script>
+<script src="world.js?v=11"></script>
+<script src="challenges.js?v=11"></script>
 <script>
   const { state, saveState } = window.FTK;
 
@@ -390,6 +393,7 @@
     document.getElementById(id).classList.add('active');
   }
   function resetGame(){
+    if(!confirm('Wirklich von vorne beginnen? Euer bisheriger Fortschritt geht dabei verloren.')) return;
     localStorage.removeItem(window.FTK.STORAGE_KEY);
     location.reload();
   }
