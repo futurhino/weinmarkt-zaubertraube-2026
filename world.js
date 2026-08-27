@@ -384,6 +384,51 @@ joyBase.addEventListener('pointercancel', joyEnd);
 let jumpRequested = false;
 jumpBtn.addEventListener('pointerdown', e => { e.preventDefault(); jumpRequested = true; });
 
+/* --- Pfeiltasten-Kreuz (Alternative zum Joystick) --- */
+const dpad = document.getElementById('dpad');
+const dpadState = {up:false, down:false, left:false, right:false};
+function recomputeDpadVec(){
+  let x=0, y=0;
+  if(dpadState.left) x -= 1;
+  if(dpadState.right) x += 1;
+  if(dpadState.up) y -= 1;
+  if(dpadState.down) y += 1;
+  const len = Math.hypot(x,y);
+  if(len > 0){ x/=len; y/=len; }
+  joyVec.x = x; joyVec.y = y;
+}
+['up','down','left','right'].forEach(dir=>{
+  const btn = document.getElementById('dpad-'+dir);
+  const setDir = (v)=>{ dpadState[dir] = v; btn.classList.toggle('active', v); recomputeDpadVec(); };
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); btn.setPointerCapture(e.pointerId); setDir(true); });
+  btn.addEventListener('pointerup', () => setDir(false));
+  btn.addEventListener('pointercancel', () => setDir(false));
+  btn.addEventListener('pointerleave', () => setDir(false));
+});
+
+/* --- Umschalter Joystick <-> Pfeiltasten --- */
+const CONTROL_KEY = 'ftk_control_mode';
+let controlMode = 'dpad';
+try{ controlMode = localStorage.getItem(CONTROL_KEY) || 'dpad'; }catch(e){}
+const controlToggle = document.getElementById('controlToggle');
+function applyControlMode(){
+  joyBase.style.display = controlMode === 'joystick' ? 'block' : 'none';
+  dpad.style.display = controlMode === 'dpad' ? 'grid' : 'none';
+  joyVec.x = 0; joyVec.y = 0;
+  Object.keys(dpadState).forEach(k => dpadState[k] = false);
+  if(controlToggle) controlToggle.textContent = controlMode === 'dpad'
+    ? '🕹️ Zu Steuerkreuz wechseln'
+    : '⬅️➡️ Zu Pfeiltasten wechseln';
+}
+if(controlToggle){
+  controlToggle.addEventListener('click', ()=>{
+    controlMode = controlMode === 'dpad' ? 'joystick' : 'dpad';
+    try{ localStorage.setItem(CONTROL_KEY, controlMode); }catch(e){}
+    applyControlMode();
+  });
+}
+applyControlMode();
+
 /* =========================================================================
    SPIEL-MODUS: HUB vs. HERAUSFORDERUNG
    ========================================================================= */
