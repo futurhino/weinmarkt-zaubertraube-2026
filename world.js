@@ -342,7 +342,6 @@ function buildPlayer(){
   scene.add(grp);
   player = grp;
   player.userData.yaw = Math.PI;
-  player.userData.camYaw = 0;
 }
 
 /* =========================================================================
@@ -444,18 +443,21 @@ function playerGroundY(){
 }
 
 function updatePlayer(dt){
-  const moveVec = new THREE.Vector3(joyVec.x, 0, joyVec.y);
-  const speed = 8.5;
-  if(moveVec.lengthSq() > 0.01){
-    moveVec.normalize();
-    const targetYaw = Math.atan2(moveVec.x, moveVec.z) + player.userData.camYaw;
-    let dy = targetYaw - player.userData.yaw;
-    while(dy > Math.PI) dy -= Math.PI*2;
-    while(dy < -Math.PI) dy += Math.PI*2;
-    player.userData.yaw += dy*Math.min(1, dt*10);
-    player.rotation.y = player.userData.yaw;
-    const worldMove = new THREE.Vector3(Math.sin(player.userData.yaw), 0, Math.cos(player.userData.yaw));
-    player.position.addScaledVector(worldMove, speed*dt);
+  // Auto-Steuerung: hoch/runter = vor/zurück in Blickrichtung, links/rechts = drehen.
+  // So zeigt "vorwärts" immer genau dorthin, wohin die (hinter dem Spieler
+  // folgende) Kamera gerade schaut - unabhängig davon, wie oft schon gedreht wurde.
+  const throttle = -joyVec.y;
+  const turn = joyVec.x;
+  const speed = 8.5, turnSpeed = 3.4;
+
+  if(Math.abs(turn) > 0.02){
+    player.userData.yaw += turn*turnSpeed*dt;
+  }
+  player.rotation.y = player.userData.yaw;
+
+  if(Math.abs(throttle) > 0.02){
+    const forward = new THREE.Vector3(Math.sin(player.userData.yaw), 0, Math.cos(player.userData.yaw));
+    player.position.addScaledVector(forward, throttle*speed*dt);
     player.userData.bob = (player.userData.bob||0) + dt*10;
   }
   player.position.x = Math.max(-HALF, Math.min(HALF, player.position.x));
@@ -497,7 +499,6 @@ function updateCamera(dt){
   camera._lookAt = camera._lookAt || lookAt.clone();
   camera._lookAt.lerp(lookAt, Math.min(1, dt*6));
   camera.lookAt(camera._lookAt);
-  player.userData.camYaw = 0; // Kamera folgt starr hinter dem Spieler (kein Dreh-Input nötig)
 }
 
 /* =========================================================================
