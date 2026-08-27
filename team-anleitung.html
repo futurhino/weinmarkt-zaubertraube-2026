@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Betriebsanleitung | Die verschwundene Zaubertraube</title>
+<style>
+  :root{
+    --paper:#f6f1e7; --surface:#fffdf9; --ink:#23262f; --ink-muted:#6b6455;
+    --accent:#f810b1; --accent-soft:#fbe1f2; --rule:#ddd5c5; --chip-bg:#efe8d8;
+    --ok:#1fa66b; --warn:#d1483f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1c1b22; --surface:#242229; --ink:#f3ecdf; --ink-muted:#9a9384;
+      --accent:#ff59db; --accent-soft:rgba(248,16,177,0.16); --rule:#3a3742; --chip-bg:#2e2b34;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .doc{
+    background:var(--paper); color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.55; padding:clamp(28px,6vw,72px) clamp(18px,5vw,28px) 80px;
+  }
+  .sheet{max-width:760px; margin:0 auto;}
+  .masthead{border-bottom:2px solid var(--ink); padding-bottom:20px; margin-bottom:36px;}
+  .eyebrow{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 10px;
+  }
+  h1{font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-weight:700; font-size:clamp(26px,5vw,36px); letter-spacing:-.01em; margin:0 0 8px;}
+  .masthead p{margin:0; color:var(--ink-muted); font-size:15px;}
+  .meta{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:12px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-size:12px; letter-spacing:.03em; color:var(--ink-muted);}
+
+  section.block{margin-bottom:44px;}
+  .block-head{display:flex; align-items:baseline; gap:14px; margin-bottom:16px;}
+  .block-head h2{font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-weight:700; font-size:20px; letter-spacing:.01em; margin:0; text-transform:uppercase;}
+
+  p{font-size:15.5px; margin:0 0 12px;}
+  a{color:var(--accent);}
+
+  .card{background:var(--surface); border:1px solid var(--rule); border-radius:14px; padding:18px 20px; margin-bottom:12px;}
+  .card h3{font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-size:14.5px; margin:0 0 8px;}
+
+  ul.check{list-style:none; margin:0; padding:0;}
+  ul.check li{position:relative; padding:4px 0 10px 30px; font-size:15.5px;}
+  ul.check li::before{
+    content:"☐"; position:absolute; left:0; top:4px; font-size:17px; color:var(--accent);
+  }
+
+  table{width:100%; border-collapse:collapse; font-size:14px; background:var(--surface); border-radius:12px; overflow:hidden;}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top;}
+  th{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); background:var(--chip-bg);
+  }
+  td.code{font-family:"Courier New",monospace; font-weight:700;}
+  td.todo{color:var(--warn); font-weight:600; font-size:13px;}
+
+  .chip{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-size:11px; font-weight:600;
+    letter-spacing:.03em; color:var(--ink-muted); background:var(--chip-bg); padding:3px 9px; border-radius:999px;
+  }
+  .warn-box{background:var(--accent-soft); border-radius:12px; padding:14px 16px; font-size:14.5px; margin-bottom:12px;}
+  .warn-box b{color:var(--accent);}
+
+  .script{
+    background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0;
+    padding:14px 18px; font-style:italic; font-size:15px; margin-bottom:14px;
+  }
+  footer{margin-top:52px; padding-top:16px; border-top:1px solid var(--rule); font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-size:11.5px; letter-spacing:.03em; color:var(--ink-muted);}
+</style>
+</head>
+<body>
+
+<div class="doc">
+  <div class="sheet">
+
+    <div class="masthead">
+      <p class="eyebrow">Anleitung für euch · Nicht für Gäste</p>
+      <h1>Die verschwundene Zaubertraube &ndash; Betriebsanleitung</h1>
+      <p>Alles, was ihr wissen müsst, um die digitale Rallye am Stand laufen zu lassen.</p>
+      <div class="meta">
+        <span>Weinmarkt Schorndorf, 28.&ndash;30.08.2026</span>
+        <span>·</span>
+        <span>Oberer Marktplatz</span>
+        <span>·</span>
+        <span>Futurhinos for Kids</span>
+      </div>
+    </div>
+
+    <section class="block">
+      <div class="block-head"><h2>Kurzüberblick</h2></div>
+      <p>Familien spielen auf dem <strong>eigenen Handy</strong> im Browser &ndash; kein App-Download. Das Spiel ist eine kleine 3D-Welt (Kristall-Weinberg): Man läuft zu einem leuchtenden Element, meistert eine Mini-Herausforderung (Rätsel, Sammeln oder Klettern), bekommt danach einen Hinweis auf einen <strong>echten Ort</strong> hier auf dem Weinfest, geht dorthin, findet dort ein <strong>Codewort</strong> auf einer kleinen Karte und tippt es im Spiel ein. Das Element erscheint daraufhin im virtuellen Altar. Nach allen 6 Elementen ist die Zaubertraube gerettet.</p>
+      <p>Der Fortschritt wird nur lokal auf dem jeweiligen Handy gespeichert &ndash; es gibt keinen Server, keine Datenbank, keine Anmeldung. Wenn ein Team das Handy wechselt oder Browserdaten löscht, geht der Fortschritt verloren (siehe Troubleshooting).</p>
+      <div class="warn-box">
+        <b>Spiel-Link:</b> <a href="https://futurhino.github.io/weinmarkt-zaubertraube-2026/">https://futurhino.github.io/weinmarkt-zaubertraube-2026/</a><br>
+        Der QR-Code dafür liegt als <code>qr-code.png</code> im Projektordner &ndash; auf Aufsteller/Plakat drucken.
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>Heute Abend: Vor-Ort-Checkliste</h2></div>
+      <ul class="check">
+        <li>Marktplatz einmal ablaufen und für jede der 6 Stationen einen konkreten, gut wiederzufindenden Ort festlegen (Tabelle unten als Ausgangspunkt).</li>
+        <li>Die 6 Codewort-Karten ausdrucken (<code>druckmaterial-codewort-karten.html</code>), ausschneiden, laminieren.</li>
+        <li>Karten an den festgelegten Orten diskret platzieren &ndash; sichtbar genug zum Finden, aber nicht wie offizielle Beschilderung.</li>
+        <li>Falls sich die Hinweistexte im Spiel deutlich von den echten Orten unterscheiden: kurz Bescheid geben, dann werden die Cluetexte in der Datei angepasst (dauert nur wenige Minuten).</li>
+        <li>Kurz selbst durchspielen (eine Station reicht), um zu sehen, wie es sich anfühlt &ndash; am besten auf dem Handy, mit dem ihr später auch den Aufsteller-QR-Code testet.</li>
+        <li>Aufsteller/Plakat mit QR-Code am Stand sichtbar aufstellen.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>Stationstabelle</h2><span class="chip">Codewort-Karten hier platzieren</span></div>
+      <table>
+        <tr><th>#</th><th>Wesen</th><th>Codewort</th><th>Hinweis im Spiel (aktuell)</th><th>Echter Standort</th></tr>
+        <tr><td>1</td><td>Kicherbeere</td><td class="code">KICHER</td><td>Duftet nach frisch Gebackenem</td><td class="todo">TODO heute Abend eintragen</td></tr>
+        <tr><td>2</td><td>Glitzerkorn</td><td class="code">GLITZER</td><td>Beim Marktbrunnen / Wasser</td><td class="todo">TODO heute Abend eintragen</td></tr>
+        <tr><td>3</td><td>Nebelknospe</td><td class="code">NEBEL</td><td>Schatten der ältesten Mauern (Kirche)</td><td class="todo">TODO heute Abend eintragen</td></tr>
+        <tr><td>4</td><td>Brummzweig</td><td class="code">BRUMM</td><td>Bühne / lautester Platz</td><td class="todo">TODO heute Abend eintragen</td></tr>
+        <tr><td>5</td><td>Mondperle</td><td class="code">MOND</td><td>Hoch oben am eigenen Stand (Rhino-Maskottchen)</td><td>Futurhinos-Stand</td></tr>
+        <tr><td>6</td><td>Kernwächter</td><td class="code">KERN</td><td>Zurück zum Futurhinos-Stand</td><td>Futurhinos-Stand</td></tr>
+      </table>
+      <p class="muted" style="font-size:13px;margin-top:10px;">Die genauen Formulierungen stehen ganz oben in <code>world.js</code> im Abschnitt <code>STATIONS</code> &ndash; dort auch direkt änderbar.</p>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>Am Stand: Ticket &amp; kurze Erklärung</h2></div>
+      <p>Ticket: <strong>5&nbsp;€ pro Team</strong> (oder inklusive im Weinwochen-Familienpass). Danach kurz erklären &ndash; das reicht meistens:</p>
+      <p class="script">„Ihr bekommt jetzt Zugang zu einer kleinen 3D-Spielwelt auf eurem Handy &ndash; scannt einfach den QR-Code hier. Dort löst ihr kleine Aufgaben, bekommt dann einen Hinweis, wo ihr auf dem Weinfest wirklich suchen müsst, und tippt dort ein Codewort ein, das ihr findet. Wenn ihr alle sechs Traubenwesen habt, kommt ihr nochmal zu uns an den Stand und holt euch eure Belohnung ab.“</p>
+      <p>Für jüngere Kinder (ab 5) lohnt es sich, kurz zu zeigen, wie das Steuerkreuz unten links funktioniert &ndash; danach läuft es meist von allein. Im Spiel gibt es oben rechts während des Spielens außerdem ein „?“, das die Anleitung jederzeit nochmal einblendet.</p>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>Troubleshooting</h2></div>
+      <div class="card"><h3>Seite lädt nicht / bleibt weiß</h3><p style="margin:0;">Meist WLAN/Mobilfunk-Problem beim Gast. Einmal neu laden lassen, ggf. euer Stand-WLAN anbieten.</p></div>
+      <div class="card"><h3>Fortschritt ist weg (neues Handy, Browser gewechselt)</h3><p style="margin:0;">Normal, da alles nur lokal gespeichert wird. Kein Fix nötig &ndash; das Team startet einfach neu (Link „Von vorne beginnen“ auf dem Startbildschirm).</p></div>
+      <div class="card"><h3>Kind hängt bei einer Herausforderung fest</h3><p style="margin:0;">Es gibt kein Scheitern/Game-Over &ndash; man kann beliebig oft neu versuchen. Beim Merk-Rätsel einfach nochmal genau hinschauen lassen, beim Klettern notfalls anfeuern, es gibt keine Zeitbegrenzung.</p></div>
+      <div class="card"><h3>3D ruckelt auf älterem Handy</h3><p style="margin:0;">Läuft trotzdem, nur etwas langsamer &ndash; kein Blocker fürs Weiterspielen.</p></div>
+      <div class="card"><h3>Codewort wird nicht akzeptiert</h3><p style="margin:0;">Groß-/Kleinschreibung ist egal, aber Leerzeichen/Tippfehler nicht &ndash; im Zweifel Codewort von der Karte nochmal genau vorlesen.</p></div>
+    </section>
+
+    <section class="block" style="margin-bottom:0;">
+      <div class="block-head"><h2>Noch offen</h2><span class="chip">Vor dem Start klären</span></div>
+      <div class="warn-box"><b>Belohnung am Ende:</b> Im Spiel steht aktuell nur „holt euch eure Belohnung ab“ &ndash; was genau das ist (Sticker, Rabatt, kleines Geschenk o.&nbsp;ä.), ist noch nicht festgelegt. Bitte intern entscheiden, damit ihr am Stand vorbereitet seid.</div>
+      <div class="warn-box"><b>Echte Standorte:</b> Siehe Stationstabelle oben &ndash; vier von sechs Orten sind noch Platzhalter.</div>
+    </section>
+
+    <footer>Interner Arbeitsstand · Futurhinos for Kids · Projektordner: <code>weinmarkt-zaubertraube-2026</code></footer>
+
+  </div>
+</div>
+</body>
+</html>
