@@ -187,6 +187,15 @@
     z-index:8; touch-action:none;
   }
 
+  #rotateLeftBtn, #rotateRightBtn{
+    position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 118px);
+    width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.2); border:1.5px solid rgba(255,255,255,.4);
+    color:#fff; font-size:19px; z-index:8; touch-action:none; display:flex; align-items:center; justify-content:center;
+  }
+  #rotateLeftBtn{ right:calc(env(safe-area-inset-right,0px) + 80px); }
+  #rotateRightBtn{ right:calc(env(safe-area-inset-right,0px) + 26px); }
+  #rotateLeftBtn:active, #rotateRightBtn:active{ background:rgba(255,255,255,.4); }
+
   /* --- Simon-Rätsel Overlay --- */
   #simonOverlay{
     position:fixed; inset:0; z-index:50; background:rgba(15,10,20,.82);
@@ -264,7 +273,7 @@
     <p class="eyebrow" style="margin-top:6px;">So funktioniert's</p>
     <ol class="steps">
       <li><b>Team-Namen eingeben</b> und den Kristall-Weinberg betreten.</li>
-      <li>Mit dem <b>Steuerkreuz</b> (unten links) zum leuchtenden Kristall mit dem „!“ laufen, mit <b>SPRUNG</b> (unten rechts) hüpfen.</li>
+      <li>Mit dem <b>Steuerkreuz</b> (unten links) laufen, mit <b>SPRUNG</b> hüpfen und mit <b>◁ ▷</b> umschauen, bis ihr den leuchtenden Kristall mit dem „!“ seht.</li>
       <li>Dort angekommen: eine kleine <b>Herausforderung meistern</b> &ndash; Muster merken, einsammeln oder hochklettern.</li>
       <li>Danach erscheint ein <b>Hinweis</b>: wo versteckt sich das Traubenwesen wirklich, hier auf dem Weinfest?</li>
       <li><b>Hingehen</b>, das Codewort vor Ort finden und im Spiel eingeben.</li>
@@ -310,6 +319,8 @@
       <button id="dpad-down" class="down">▼</button>
     </div>
     <button id="jumpBtn">SPRUNG</button>
+    <button id="rotateLeftBtn">◁</button>
+    <button id="rotateRightBtn">▷</button>
   </section>
 
 </div>
@@ -353,7 +364,7 @@
   <div class="modal-sheet">
     <p class="eyebrow">So funktioniert's</p>
     <ol class="steps" style="margin-bottom:16px;">
-      <li><b>Zum leuchtenden Element laufen</b> &ndash; Steuerkreuz unten links, Sprung unten rechts.</li>
+      <li><b>Zum leuchtenden Kristall mit dem „!“ laufen</b> &ndash; Steuerkreuz unten links, Sprung unten rechts, mit ◁ ▷ umschauen.</li>
       <li><b>Herausforderung meistern</b> &ndash; Muster merken, einsammeln oder hochklettern.</li>
       <li><b>Hinweis lesen:</b> wo versteckt sich das Traubenwesen wirklich auf dem Weinfest?</li>
       <li><b>Hingehen</b>, Codewort vor Ort finden, im Spiel eingeben.</li>
@@ -383,8 +394,8 @@
 </div>
 
 <script src="three.min.js"></script>
-<script src="world.js?v=11"></script>
-<script src="challenges.js?v=11"></script>
+<script src="world.js?v=12"></script>
+<script src="challenges.js?v=12"></script>
 <script>
   const { state, saveState } = window.FTK;
 

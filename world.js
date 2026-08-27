@@ -219,13 +219,21 @@ function buildDecor(){
   }
 }
 
-/* Bei jedem gefundenen Traubenwesen wächst irgendwo in der Welt ein neuer
-   Rebstock - die Welt wird spürbar reicher und schöner, je weiter man kommt. */
-function spawnGrapeCluster(){
+/* Bei jedem gefundenen Traubenwesen verändert sich die Welt sichtbar und
+   direkt in der Nähe der Spielfigur (garantiert im Blickfeld, kein Suchen
+   nötig) - je nach Station ein anderer Effekt (Reben, Kristalle, ...). */
+function randNear(center, rMin, rMax){
   const a = Math.random()*Math.PI*2;
-  const r = 7 + Math.random()*(HALF-11);
+  const r = rMin + Math.random()*(rMax-rMin);
+  const x = center.x + Math.cos(a)*r;
+  const z = center.z + Math.sin(a)*r;
+  return { x: Math.max(-HALF+2, Math.min(HALF-2, x)), z: Math.max(-HALF+2, Math.min(HALF-2, z)) };
+}
+
+function spawnGrapeCluster(center){
+  const p = randNear(center, 2.5, 9);
   const grp = new THREE.Group();
-  grp.position.set(Math.cos(a)*r, 0, Math.sin(a)*r);
+  grp.position.set(p.x, 0, p.z);
   grp.rotation.y = Math.random()*Math.PI*2;
 
   const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,1.7,6), toonMat(0x8a5a3c));
@@ -248,14 +256,45 @@ function spawnGrapeCluster(){
   scene.add(grp);
   growingClusters.push({ grp, t:0 });
 }
+
+function spawnCrystalSpike(center){
+  const p = randNear(center, 2.5, 9);
+  const colors = [0xff8fd6, 0x9d8cff, 0x8fd6ff, 0xffd08f, 0xf810b1];
+  const col = colors[Math.floor(Math.random()*colors.length)];
+  const h = 1.4 + Math.random()*1.8;
+  const spike = new THREE.Mesh(new THREE.ConeGeometry(0.4+Math.random()*0.3, h, 5), toonMat(col, {emissive:col, emissiveIntensity:0.55}));
+  spike.position.set(p.x, h/2, p.z);
+  spike.rotation.y = Math.random()*Math.PI;
+  spike.scale.setScalar(0.01);
+  scene.add(spike);
+  growingClusters.push({ grp:spike, t:0 });
+}
+
 const growingClusters = [];
 function updateGrowingClusters(dt){
   for(let i=growingClusters.length-1;i>=0;i--){
     const c = growingClusters[i];
-    c.t += dt*1.8;
-    c.grp.scale.setScalar(Math.min(1, c.t));
-    if(c.t >= 1) growingClusters.splice(i,1);
+    c.t += dt*1.6;
+    const s = Math.min(1, c.t) * (1 + Math.sin(Math.min(1,c.t)*Math.PI)*0.15);
+    c.grp.scale.setScalar(s);
+    if(c.t >= 1){ c.grp.scale.setScalar(1); growingClusters.splice(i,1); }
   }
+}
+
+/* Je Station ein eigener, deutlich sichtbarer Verwandlungs-Effekt - direkt
+   um die aktuelle Position der Spielfigur, damit er sofort auffällt. */
+function growWorldForStation(idx, center){
+  const c = center || player.position;
+  const plans = [
+    { fn: spawnGrapeCluster, n: 14 },   // Kicherbeere: ganz viele Reben auf einmal
+    { fn: spawnCrystalSpike, n: 12 },   // Glitzerkorn: funkelnde Kristalle
+    { fn: spawnGrapeCluster, n: 8 },    // Nebelknospe
+    { fn: spawnCrystalSpike, n: 8 },    // Brummzweig
+    { fn: spawnGrapeCluster, n: 8 },    // Mondperle
+    { fn: () => { spawnGrapeCluster(c); spawnCrystalSpike(c); }, n: 10 }, // Kernwächter: Finale, von allem
+  ];
+  const plan = plans[idx] || plans[0];
+  for(let i=0;i<plan.n;i++) plan.fn(c);
 }
 
 let altarOrb, altarGlow;
@@ -443,6 +482,16 @@ joyBase.addEventListener('pointercancel', joyEnd);
 let jumpRequested = false;
 jumpBtn.addEventListener('pointerdown', e => { e.preventDefault(); jumpRequested = true; });
 
+/* --- Umschauen: Kamera per Tasten um die Figur drehen --- */
+const rotateLeftBtn = document.getElementById('rotateLeftBtn');
+const rotateRightBtn = document.getElementById('rotateRightBtn');
+[[rotateLeftBtn,-1],[rotateRightBtn,1]].forEach(([btn,dir])=>{
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); btn.setPointerCapture(e.pointerId); rotateInput = dir; });
+  btn.addEventListener('pointerup', () => { rotateInput = 0; });
+  btn.addEventListener('pointercancel', () => { rotateInput = 0; });
+  btn.addEventListener('pointerleave', () => { rotateInput = 0; });
+});
+
 /* --- Pfeiltasten-Kreuz (Alternative zum Joystick) --- */
 const dpad = document.getElementById('dpad');
 const dpadState = {up:false, down:false, left:false, right:false};
@@ -502,13 +551,19 @@ function playerGroundY(){
   return 0;
 }
 
+let cameraYaw = Math.PI;
+function camForwardVec(){ return new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw)); }
+function camRightVec(){ return new THREE.Vector3(-Math.cos(cameraYaw), 0, Math.sin(cameraYaw)); }
+
 function updatePlayer(dt){
-  // Direkte Richtungssteuerung: hoch/runter/links/rechts bewegen die Figur
-  // exakt in diese Bildschirmrichtung. Die Kamera hat einen festen Blickwinkel
-  // (siehe updateCamera) und dreht sich nie mit - dadurch bleiben die Pfeile
-  // immer gleich, egal wohin die Figur gerade schaut.
+  // Bewegung ist relativ zur AKTUELLEN Kamera-Blickrichtung (jeden Frame neu
+  // berechnet, kein Nachlaufen) - "hoch" läuft also immer dorthin, wohin die
+  // Kamera gerade schaut, auch nachdem man sich mit den Dreh-Tasten umgeschaut hat.
   const speed = 8.5;
-  const moveVec = new THREE.Vector3(joyVec.x, 0, joyVec.y);
+  const fwd = camForwardVec(), right = camRightVec();
+  const moveVec = new THREE.Vector3()
+    .addScaledVector(fwd, -joyVec.y)
+    .addScaledVector(right, joyVec.x);
   if(moveVec.lengthSq() > 0.0004){
     if(moveVec.length() > 1) moveVec.normalize();
     player.position.addScaledVector(moveVec, speed*dt);
@@ -547,17 +602,21 @@ function updatePlayer(dt){
   }
 }
 
+let rotateInput = 0; // -1 (links) .. +1 (rechts), von den Dreh-Tasten gesetzt
 function updateCamera(dt){
+  if(rotateInput !== 0) cameraYaw += rotateInput * 2.0 * dt;
+
   const backDist = 9, height = 5.2;
+  const fwd = camForwardVec();
   const desired = new THREE.Vector3(
-    player.position.x,
+    player.position.x - fwd.x*backDist,
     player.position.y + height,
-    player.position.z + backDist
+    player.position.z - fwd.z*backDist
   );
-  camera.position.lerp(desired, Math.min(1, dt*4));
+  camera.position.lerp(desired, Math.min(1, dt*6));
   const lookAt = new THREE.Vector3(player.position.x, player.position.y+1, player.position.z);
   camera._lookAt = camera._lookAt || lookAt.clone();
-  camera._lookAt.lerp(lookAt, Math.min(1, dt*6));
+  camera._lookAt.lerp(lookAt, Math.min(1, dt*8));
   camera.lookAt(camera._lookAt);
 }
 
@@ -637,7 +696,7 @@ window.FTK_world = {
   get HALF(){ return HALF; },
   setMode(m, ctx){ mode = m; challengeCtx = ctx || null; },
   revealNext, markCaughtVisual,
-  growWorld(n){ for(let i=0;i<n;i++) spawnGrapeCluster(); },
+  growWorldForStation,
   onFrame(fn){ frameCallbacks.push(fn); },
   offFrame(fn){ frameCallbacks = frameCallbacks.filter(f => f !== fn); },
   stationWorldPos(i){ const v = new THREE.Vector3(); stationGroups[i].grp.getWorldPosition(v); return v; },

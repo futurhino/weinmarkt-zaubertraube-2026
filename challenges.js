@@ -207,7 +207,7 @@ window.FTK_checkCode = function(){
       document.getElementById('modalBackdrop').classList.remove('show');
       window.FTK_world.markCaughtVisual(activeStationIdx);
       window.FTK_world.revealNext();
-      window.FTK_world.growWorld(3);
+      window.FTK_world.growWorldForStation(activeStationIdx);
       showToast(st);
       renderHud();
       if(navigator.vibrate) navigator.vibrate([30,40,30,40,80]);
