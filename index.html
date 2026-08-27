@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Das Geheimnis der verschwundenen Zaubertraube</title>
+<style>
+  :root{
+    --paper:#f6f1e7;
+    --surface:#fffdf9;
+    --ink:#23262f;
+    --ink-muted:#6b6455;
+    --accent:#f810b1;
+    --accent-soft:#fbe1f2;
+    --rule:#ddd5c5;
+    --chip-bg:#efe8d8;
+    --ok:#1fa66b;
+    --warn:#d1483f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1c1b22; --surface:#242229; --ink:#f3ecdf; --ink-muted:#9a9384;
+      --accent:#ff59db; --accent-soft:rgba(248,16,177,0.16); --rule:#3a3742; --chip-bg:#2e2b34;
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5; overscroll-behavior:none; user-select:none;
+  }
+  h1,h2,h3,.ui{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+  }
+  .app{
+    max-width:520px; margin:0 auto; min-height:100dvh;
+    display:flex; flex-direction:column;
+  }
+  .screen{
+    display:none; flex:1; flex-direction:column;
+    padding:clamp(20px,6vw,32px) clamp(18px,5vw,26px) 28px;
+  }
+  .screen.active{display:flex;}
+
+  .eyebrow{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 10px;
+  }
+  h1{font-size:clamp(26px,7vw,34px); font-weight:700; letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance;}
+  p{margin:0 0 14px; font-size:16px;}
+  .muted{color:var(--ink-muted); font-size:14px;}
+
+  .spacer{flex:1;}
+  .btn{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:15px; letter-spacing:.02em;
+    border:none; border-radius:14px; padding:16px 20px;
+    background:var(--accent); color:#fff; cursor:pointer;
+    width:100%; text-align:center; box-shadow:0 6px 18px -6px var(--accent);
+  }
+  .btn:active{transform:scale(.98);}
+  .btn.secondary{
+    background:transparent; color:var(--ink); border:1.5px solid var(--rule); box-shadow:none;
+  }
+  .btn.small{padding:10px 14px; font-size:13px; width:auto; border-radius:10px;}
+  .btn[disabled]{opacity:.4; pointer-events:none;}
+
+  input[type=text]{
+    font-family:inherit; font-size:18px; width:100%; padding:14px 16px;
+    border-radius:12px; border:1.5px solid var(--rule); background:var(--surface); color:var(--ink);
+    margin-bottom:14px;
+  }
+  input[type=text]:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  input.shake{animation:shake .4s;}
+  @keyframes shake{
+    10%,90%{transform:translateX(-2px);} 20%,80%{transform:translateX(4px);}
+    30%,50%,70%{transform:translateX(-8px);} 40%,60%{transform:translateX(8px);}
+  }
+
+  /* --- Intro --- */
+  .cover{
+    border-radius:20px; background:radial-gradient(120% 140% at 30% 10%, var(--accent-soft), transparent 60%), var(--surface);
+    border:1px solid var(--rule); padding:24px; margin-bottom:18px; text-align:center;
+  }
+  .cover .grape{font-size:64px; display:block; margin-bottom:6px; animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .meta-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px;}
+  .chip{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-muted);
+    background:var(--chip-bg); padding:5px 10px; border-radius:999px;
+  }
+
+  /* --- Team setup --- */
+  label{
+    display:block; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--ink-muted); margin-bottom:8px;
+  }
+
+  /* --- Album strip --- */
+  .album{
+    display:flex; gap:8px; margin-bottom:18px; overflow-x:auto; padding-bottom:2px;
+  }
+  .album-slot{
+    flex:0 0 auto; width:52px; height:52px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+    background:var(--chip-bg); border:1.5px dashed var(--rule); filter:grayscale(1); opacity:.45;
+  }
+  .album-slot.caught{
+    filter:none; opacity:1; border-style:solid; border-color:transparent;
+    background:linear-gradient(145deg, var(--c1,var(--accent)), var(--c2,var(--accent)));
+    box-shadow:0 4px 12px -4px rgba(0,0,0,.35);
+  }
+
+  /* --- Quest card --- */
+  .quest-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:18px;
+    padding:22px; margin-bottom:16px;
+  }
+  .quest-card .count{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--accent); margin-bottom:8px;
+  }
+  .quest-card h2{font-size:20px; margin:0 0 10px;}
+  .clue{font-size:16.5px; margin-bottom:0;}
+  .feedback{font-size:14px; font-weight:600; min-height:20px; margin:-4px 0 10px;}
+  .feedback.err{color:var(--warn);}
+  .feedback.ok{color:var(--ok);}
+
+  details.profi{margin-top:6px;}
+  details.profi summary{
+    cursor:pointer; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:12.5px; font-weight:700; letter-spacing:.03em; color:var(--ink-muted);
+  }
+  details.profi p{margin-top:10px; font-size:14.5px;}
+
+  /* --- Encounter (camera) --- */
+  .screen.encounter{padding:0;}
+  .cam-wrap{
+    position:relative; flex:1; overflow:hidden; background:#111;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cam-wrap video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  .cam-wrap.no-camera{
+    background:linear-gradient(160deg,#2b1030,#5a1554 45%,#7a2a63);
+  }
+  .cam-wrap .sparkbg{position:absolute; inset:0; overflow:hidden; pointer-events:none; opacity:0;}
+  .cam-wrap.no-camera .sparkbg{opacity:1;}
+  .sparkbg i{
+    position:absolute; width:3px; height:3px; background:#fff; border-radius:50%;
+    opacity:.6; animation:twinkle 2.4s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.9;}}
+
+  .encounter-top{
+    position:absolute; top:0; left:0; right:0; z-index:5;
+    padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 40px;
+    background:linear-gradient(to bottom, rgba(0,0,0,.55), transparent);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .encounter-top .name{color:#fff; font-weight:700; font-size:16px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;}
+  .encounter-top .dots{display:flex; gap:6px;}
+  .encounter-top .dot{width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.3);}
+  .encounter-top .dot.hit{background:#fff;}
+
+  .creature{
+    position:absolute; width:88px; height:88px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 32% 28%, var(--c1,#f810b1), var(--c2,#7a0f70) 78%);
+    box-shadow:0 10px 26px -8px rgba(0,0,0,.6), inset 0 -6px 14px rgba(0,0,0,.25);
+    transition:left .55s cubic-bezier(.34,1.4,.4,1), top .55s cubic-bezier(.34,1.4,.4,1), transform .15s;
+    cursor:pointer; touch-action:manipulation;
+  }
+  .creature::before{
+    content:""; position:absolute; top:-14px; left:50%; transform:translateX(-50%) rotate(-12deg);
+    width:14px; height:20px; background:#5fae4f; border-radius:0 100% 0 100%;
+  }
+  .creature .eyes{display:flex; gap:14px;}
+  .creature .eye{width:12px; height:14px; background:#fff; border-radius:50%; position:relative;}
+  .creature .eye::after{content:""; position:absolute; width:6px; height:6px; background:#1a1a1a; border-radius:50%; top:5px; left:3px;}
+  .creature.hit{animation:squish .18s;}
+  @keyframes squish{50%{transform:scale(.78,1.18);}}
+  .creature.caught{animation:catchpop .5s forwards;}
+  @keyframes catchpop{
+    0%{transform:scale(1);} 60%{transform:scale(1.3); filter:brightness(1.6);} 100%{transform:scale(0); filter:brightness(2.2);}
+  }
+
+  .sparkle-particle{
+    position:absolute; width:6px; height:6px; border-radius:50%; background:#fff;
+    pointer-events:none; animation:burst .6s ease-out forwards;
+  }
+  @keyframes burst{
+    from{opacity:1; transform:translate(0,0) scale(1);}
+    to{opacity:0; transform:translate(var(--dx),var(--dy)) scale(.3);}
+  }
+
+  .cam-hint{
+    position:absolute; bottom:calc(env(safe-area-inset-bottom,0px) + 18px); left:16px; right:16px;
+    text-align:center; color:#fff; font-size:13.5px; z-index:5; opacity:.85;
+  }
+
+  /* --- Caught / Finale --- */
+  .prize{
+    text-align:center; padding:26px 20px 8px;
+  }
+  .prize .big{font-size:72px; display:block; margin-bottom:10px;}
+  .prize h2{font-size:24px; margin:0 0 8px;}
+
+  .factbox{
+    background:var(--accent-soft); border-radius:14px; padding:14px 16px; font-size:14.5px; margin:14px 0 18px;
+  }
+
+  footer.disclaimer{margin-top:auto; padding-top:18px; text-align:center;}
+  footer.disclaimer a{color:var(--ink-muted); font-size:12px; text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- INTRO -->
+  <section id="screen-intro" class="screen active">
+    <div class="cover">
+      <span class="grape">🍇</span>
+      <p class="eyebrow">Futurhinos for Kids · Weinmarkt Schorndorf</p>
+      <h1>Das Geheimnis der verschwundenen Zaubertraube</h1>
+      <p style="margin-bottom:0;">Beim letzten Feuerwerk der Weinwochen ist die uralte Zaubertraube, die über den Schorndorfer Weinbergen wacht, vor Schreck in tausend funkelnde Splitter zersprungen. Die Splitter haben sich in kleine <strong>Traubenwesen</strong> verwandelt &ndash; und sich über den ganzen Marktplatz verteilt.</p>
+      <div class="meta-row">
+        <span class="chip">Ab 5 Jahren, mit den Eltern</span>
+        <span class="chip">Auch für Große spannend</span>
+        <span class="chip">Dauer ca. 30&ndash;45 Min.</span>
+      </div>
+    </div>
+    <p>Nur ein Team von <strong>Traubenfänger:innen</strong> kann die Wesen wieder einfangen und die Zaubertraube retten. Euer Handy wird dabei zu eurem Fangnetz &ndash; haltet die Kamera bereit!</p>
+    <div class="spacer"></div>
+    <button class="btn" onclick="goTo('screen-team')">Wir sind dabei &rarr;</button>
+    <p class="muted" style="text-align:center;margin-top:12px;">Ticket 5&nbsp;€ pro Team, erhältlich an unserem Stand.</p>
+    <footer class="disclaimer">
+      <a href="javascript:void(0)" onclick="resetGame()">Von vorne beginnen</a>
+    </footer>
+  </section>
+
+  <!-- TEAM SETUP -->
+  <section id="screen-team" class="screen">
+    <p class="eyebrow">Bevor es losgeht</p>
+    <h1>Wie heißt euer Team?</h1>
+    <p class="muted">Ein Familienname, ein Fantasiename &ndash; was euch gefällt.</p>
+    <label for="teamInput">Team-Name</label>
+    <input type="text" id="teamInput" placeholder="z. B. Die wilden Traubenjäger" maxlength="40" autocomplete="off">
+    <div class="spacer"></div>
+    <button class="btn" onclick="confirmTeam()">Fangnetz aktivieren &rarr;</button>
+  </section>
+
+  <!-- QUEST -->
+  <section id="screen-quest" class="screen">
+    <p class="eyebrow" id="questTeamLabel"></p>
+    <div class="album" id="album"></div>
+    <div class="quest-card">
+      <div class="count" id="questCount"></div>
+      <h2 id="questTitle"></h2>
+      <p class="clue" id="questClue"></p>
+      <details class="profi" id="profiBox">
+        <summary>Für Profis: extra kniffliger Hinweis</summary>
+        <p id="questProfi"></p>
+      </details>
+    </div>
+    <label for="codeInput">Codewort am Fundort eingeben</label>
+    <input type="text" id="codeInput" placeholder="Codewort" autocomplete="off" autocapitalize="characters">
+    <div class="feedback" id="codeFeedback"></div>
+    <div class="spacer"></div>
+    <button class="btn" onclick="checkCode()">Traubenwesen aufspüren</button>
+  </section>
+
+  <!-- ENCOUNTER -->
+  <section id="screen-encounter" class="screen encounter">
+    <div class="cam-wrap" id="camWrap">
+      <video id="camVideo" autoplay playsinline muted></video>
+      <div class="sparkbg" id="sparkbg"></div>
+      <div class="encounter-top">
+        <span class="name" id="encName"></span>
+        <div class="dots"><span class="dot" id="dot1"></span><span class="dot" id="dot2"></span><span class="dot" id="dot3"></span></div>
+      </div>
+      <div class="creature" id="creature" onclick="hitCreature()">
+        <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
+      </div>
+      <p class="cam-hint">Tippt dreimal auf das Traubenwesen, um es zu fangen!</p>
+    </div>
+  </section>
+
+  <!-- CAUGHT -->
+  <section id="screen-caught" class="screen">
+    <div class="prize">
+      <span class="big" id="caughtEmoji">🍇</span>
+      <p class="eyebrow">Gefangen!</p>
+      <h2 id="caughtName"></h2>
+      <p id="caughtFlavor"></p>
+    </div>
+    <div class="factbox" id="caughtFact"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="caughtNextBtn" onclick="afterCatch()">Weiter zur nächsten Spur &rarr;</button>
+  </section>
+
+  <!-- FINALE -->
+  <section id="screen-finale" class="screen">
+    <div class="prize">
+      <span class="big">✨🍇✨</span>
+      <p class="eyebrow">Geschafft</p>
+      <h2>Die Zaubertraube ist gerettet!</h2>
+      <p id="finaleTeam"></p>
+    </div>
+    <div class="album" id="albumFinale"></div>
+    <p>Alle Traubenwesen sind wieder zu Hause &ndash; das Schorndorfer Weinfest ist gerettet. Vielen Dank fürs Mitfangen!</p>
+    <div class="factbox">Zeigt diesen Bildschirm an unserem Stand und holt euch eure Belohnung ab. 🎉</div>
+    <div class="spacer"></div>
+    <button class="btn secondary" onclick="resetGame()">Nochmal spielen</button>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================================
+   STATIONEN-KONFIGURATION
+   Hier vor Ort in Schorndorf anpassen:
+   - clue: Beschreibung, WO das Traubenwesen zu finden ist (Standort am
+     Oberen Marktplatz). Aktuell mit gängigen Anhaltspunkten (Rathaus,
+     Brunnen, Kirche, Bühne, euer Stand) vorbelegt - bitte heute Abend beim
+     Rundgang auf die tatsächliche Stand-Anordnung prüfen/anpassen.
+   - codeword: Wort, das auf einem kleinen Schild/Aufkleber an genau dieser
+     Stelle steht. Kurz, kindgerecht schreibbar, in Großbuchstaben.
+   - profi: optionaler kniffligerer Zusatz-Hinweis/Fakt für ältere Kinder.
+   ========================================================================= */
+const STATIONS = [
+  {
+    id:'kicher', name:'Kicherbeere', emoji:'🍇', c1:'#ffb3e6', c2:'#f810b1',
+    clue:'Kicherbeere kichert immer dort, wo es nach frisch Gebackenem duftet. Sucht die Stelle, an der der Duft am Marktplatz am stärksten ist – 《Ort: z. B. beim Flammkuchen- oder Waffelstand》.',
+    codeword:'KICHER',
+    profi:'Profi-Frage: Trauben brauchen viel Sonne, um süß zu werden. Was, glaubt ihr, passiert mit dem Zucker in der Traube, wenn daraus Wein wird?',
+    profiFact:'Beim Gären verwandeln winzige Hefepilze den Traubenzucker in Alkohol – ganz ohne Strom oder Computer, ein uralter Bio-Trick.',
+    flavor:'Kicherbeere kullert lachend in euer Fangnetz und übergibt euch als Dank den nächsten Hinweis.'
+  },
+  {
+    id:'glitzer', name:'Glitzerkorn', emoji:'🍇', c1:'#ffe066', c2:'#f810b1',
+    clue:'Glitzerkorn liebt alles, was funkelt. Am Marktplatz glitzert nichts so schön wie das Wasser – 《Ort: z. B. am Marktbrunnen》.',
+    codeword:'GLITZER',
+    profi:'Profi-Frage: Manche moderne Weinberge nutzen kleine Sensoren, um zu messen, wie feucht der Boden ist. Warum könnte das hilfreich sein?',
+    profiFact:'So wird nur genau so viel gegossen, wie die Reben wirklich brauchen – das spart Wasser und schont den Boden.',
+    flavor:'Glitzerkorn hinterlässt eine kleine funkelnde Spur, bevor es sich einfangen lässt.'
+  },
+  {
+    id:'nebel', name:'Nebelknospe', emoji:'🍇', c1:'#c9c3ff', c2:'#6f5bd6',
+    clue:'Nebelknospe versteckt sich gern im Schatten der ältesten Mauern. Geht dorthin, wo der Marktplatz am ehrwürdigsten wirkt – 《Ort: z. B. an der Stadtkirche》.',
+    codeword:'NEBEL',
+    profi:'Profi-Frage: Schorndorf feiert seine Weinwochen schon sehr lange. Was, glaubt ihr, hat sich beim Weinmachen in den letzten 100 Jahren am meisten verändert?',
+    profiFact:'Früher wurde fast alles von Hand geerntet und geprüft – heute helfen Maschinen und sogar Kameras dabei, reife Trauben zu erkennen.',
+    flavor:'Nebelknospe löst sich langsam aus dem Schatten und lässt sich vorsichtig einfangen.'
+  },
+  {
+    id:'brumm', name:'Brummzweig', emoji:'🍇', c1:'#ffcf8a', c2:'#e0672a',
+    clue:'Brummzweig summt am liebsten dort, wo Musik oder viele Stimmen zu hören sind. Sucht die Bühne oder den lautesten Platz auf dem Fest – 《Ort: z. B. an der Bühne/Musikfläche》.',
+    codeword:'BRUMM',
+    profi:'Profi-Frage: Warum feiern Menschen ein Weinfest überhaupt gemeinsam, statt jeder für sich zuhause?',
+    profiFact:'Ernte und Wein sind seit Jahrhunderten ein Grund für Gemeinschaft – Feste wie dieses verbinden Nachbarschaft, Handwerk und Genuss.',
+    flavor:'Brummzweig brummt aufgeregt, als es merkt, dass es entdeckt wurde – dann ist es gefangen.'
+  },
+  {
+    id:'mond', name:'Mondperle', emoji:'🍇', c1:'#c7e8ff', c2:'#3a7bd5',
+    clue:'Mondperle mag es hoch hinaus. Schaut an eurem eigenen Stand nach oben, dorthin, wo unser Rhino-Maskottchen zu sehen ist – 《Ort: euer Futurhinos-Stand》.',
+    codeword:'MOND',
+    profi:'Profi-Frage: Unser Rhino-Maskottchen steht für Futurhinos Kids und das Thema Künstliche Intelligenz. Was hat ein Rhino wohl mit KI zu tun?',
+    profiFact:'Nichts direkt – aber genau wie ein Rhino auf den ersten Blick unterschätzt wird, steckt hinter KI oft mehr Verständnis, als man beim ersten Mal denkt.',
+    flavor:'Mondperle schwebt sanft herab, direkt in eure Hände.'
+  },
+  {
+    id:'kern', name:'Kernwächter', emoji:'🍇', c1:'#f810b1', c2:'#4b0f45',
+    clue:'Der Kernwächter ist das Herzstück der Zaubertraube – er versteckt sich nur an eurem eigenen Stand, wo alles begonnen hat. Kommt zurück zu Futurhinos for Kids!',
+    codeword:'KERN',
+    profi:'Letzte Profi-Frage: Was war für euch das kniffligste Rätsel auf dieser Jagd – und warum?',
+    profiFact:'Ihr habt es geschafft, alle fünf Splitter wiederzufinden. Der Kernwächter braucht jetzt nur noch euch, um wieder ganz zu werden.',
+    flavor:'Der Kernwächter leuchtet golden auf – und mit einem letzten Fang ist die Zaubertraube endlich wieder vollständig!'
+  }
+];
+
+const STORAGE_KEY = 'ftk_zaubertraube_2026';
+let state = loadState();
+let activeStation = null;
+let camStream = null;
+let moveTimer = null;
+let hitCount = 0;
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { team:'', caught:[] };
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function resetGame(){
+  state = { team:'', caught:[] };
+  saveState();
+  document.getElementById('teamInput').value = '';
+  document.getElementById('codeInput').value = '';
+  goTo('screen-intro');
+}
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function confirmTeam(){
+  const val = document.getElementById('teamInput').value.trim();
+  if(!val){
+    const el = document.getElementById('teamInput');
+    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+    el.placeholder = 'Gebt zuerst einen Team-Namen ein...';
+    return;
+  }
+  state.team = val;
+  saveState();
+  renderQuest();
+  goTo('screen-quest');
+}
+
+function getCurrentStation(){
+  return STATIONS.find(s => !state.caught.includes(s.id)) || null;
+}
+
+function renderAlbumInto(elId){
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  STATIONS.forEach(s=>{
+    const d = document.createElement('div');
+    const caught = state.caught.includes(s.id);
+    d.className = 'album-slot' + (caught ? ' caught' : '');
+    d.style.setProperty('--c1', s.c1);
+    d.style.setProperty('--c2', s.c2);
+    d.textContent = caught ? s.emoji : '?';
+    el.appendChild(d);
+  });
+}
+
+function renderQuest(){
+  document.getElementById('questTeamLabel').textContent = 'Team ' + state.team;
+  renderAlbumInto('album');
+  const station = getCurrentStation();
+  if(!station){ goTo('screen-finale'); renderFinale(); return; }
+  activeStation = station;
+  const idx = STATIONS.indexOf(station) + 1;
+  document.getElementById('questCount').textContent = 'Traubenwesen ' + idx + ' von ' + STATIONS.length;
+  document.getElementById('questTitle').textContent = 'Ein Traubenwesen versteckt sich...';
+  document.getElementById('questClue').textContent = station.clue;
+  document.getElementById('questProfi').textContent = station.profi + ' ' + station.profiFact;
+  document.getElementById('codeInput').value = '';
+  document.getElementById('codeFeedback').textContent = '';
+  document.getElementById('codeFeedback').className = 'feedback';
+}
+
+function checkCode(){
+  const input = document.getElementById('codeInput');
+  const fb = document.getElementById('codeFeedback');
+  const val = input.value.trim().toUpperCase();
+  if(!val){
+    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
+    return;
+  }
+  if(val === activeStation.codeword){
+    fb.textContent = 'Gefunden! Haltet die Kamera bereit...';
+    fb.className = 'feedback ok';
+    setTimeout(()=> startEncounter(activeStation), 500);
+  }else{
+    fb.textContent = 'Noch nicht ganz richtig – schaut euch nochmal genau um.';
+    fb.className = 'feedback err';
+    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
+  }
+}
+
+function buildSparkbg(){
+  const box = document.getElementById('sparkbg');
+  box.innerHTML = '';
+  for(let i=0;i<28;i++){
+    const s = document.createElement('i');
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*100 + '%';
+    s.style.animationDelay = (Math.random()*2.4) + 's';
+    box.appendChild(s);
+  }
+}
+
+function startEncounter(station){
+  hitCount = 0;
+  document.getElementById('encName').textContent = station.name;
+  ['dot1','dot2','dot3'].forEach(id => document.getElementById(id).classList.remove('hit'));
+  const creature = document.getElementById('creature');
+  creature.classList.remove('caught');
+  creature.style.setProperty('--c1', station.c1);
+  creature.style.setProperty('--c2', station.c2);
+  buildSparkbg();
+  goTo('screen-encounter');
+  placeCreatureRandom();
+  clearInterval(moveTimer);
+  moveTimer = setInterval(placeCreatureRandom, 1600);
+
+  const camWrap = document.getElementById('camWrap');
+  camWrap.classList.remove('no-camera');
+  const video = document.getElementById('camVideo');
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false })
+      .then(stream=>{
+        camStream = stream;
+        video.srcObject = stream;
+      })
+      .catch(()=>{
+        camWrap.classList.add('no-camera');
+      });
+  }else{
+    camWrap.classList.add('no-camera');
+  }
+}
+
+function stopCamera(){
+  clearInterval(moveTimer);
+  if(camStream){
+    camStream.getTracks().forEach(t=>t.stop());
+    camStream = null;
+  }
+}
+
+function placeCreatureRandom(){
+  const wrap = document.getElementById('camWrap');
+  const c = document.getElementById('creature');
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  const cw = 88;
+  const x = Math.random() * (w - cw - 20) + 10;
+  const y = Math.random() * (h - cw - 140) + 100;
+  c.style.left = x + 'px';
+  c.style.top = y + 'px';
+}
+
+function hitCreature(){
+  if(hitCount >= 3) return;
+  hitCount++;
+  const c = document.getElementById('creature');
+  c.classList.remove('hit'); void c.offsetWidth; c.classList.add('hit');
+  document.getElementById('dot'+hitCount).classList.add('hit');
+  if(navigator.vibrate) navigator.vibrate(40);
+  if(hitCount >= 3){
+    clearInterval(moveTimer);
+    c.classList.add('caught');
+    spawnSparkles();
+    if(navigator.vibrate) navigator.vibrate([30,40,30,40,80]);
+    setTimeout(()=>{
+      stopCamera();
+      showCaught(activeStation);
+    }, 550);
+  }else{
+    placeCreatureRandom();
+  }
+}
+
+function spawnSparkles(){
+  const wrap = document.getElementById('camWrap');
+  const c = document.getElementById('creature');
+  const cx = c.offsetLeft + 44, cy = c.offsetTop + 44;
+  for(let i=0;i<16;i++){
+    const p = document.createElement('div');
+    p.className = 'sparkle-particle';
+    const angle = (Math.PI*2) * (i/16);
+    const dist = 60 + Math.random()*40;
+    p.style.setProperty('--dx', Math.cos(angle)*dist + 'px');
+    p.style.setProperty('--dy', Math.sin(angle)*dist + 'px');
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    wrap.appendChild(p);
+    setTimeout(()=>p.remove(), 650);
+  }
+}
+
+function showCaught(station){
+  document.getElementById('caughtEmoji').textContent = station.emoji;
+  document.getElementById('caughtName').textContent = station.name + ' ist gefangen!';
+  document.getElementById('caughtFlavor').textContent = station.flavor;
+  document.getElementById('caughtFact').textContent = station.profiFact;
+  state.caught.push(station.id);
+  saveState();
+  const remaining = STATIONS.length - state.caught.length;
+  document.getElementById('caughtNextBtn').textContent = remaining > 0
+    ? 'Weiter zur nächsten Spur →'
+    : 'Zur großen Verwandlung →';
+  goTo('screen-caught');
+}
+
+function afterCatch(){
+  renderQuest();
+  const station = getCurrentStation();
+  if(station){ goTo('screen-quest'); } else { renderFinale(); goTo('screen-finale'); }
+}
+
+function renderFinale(){
+  document.getElementById('finaleTeam').textContent = 'Team ' + state.team + ' hat alle ' + STATIONS.length + ' Traubenwesen eingefangen.';
+  renderAlbumInto('albumFinale');
+}
+
+/* Bei Wiederaufruf laufenden Stand wiederherstellen */
+(function init(){
+  if(state.team && state.caught){
+    if(state.caught.length >= STATIONS.length){
+      renderFinale();
+      goTo('screen-finale');
+    } else if(state.caught.length > 0 || document.getElementById('teamInput')){
+      renderQuest();
+      goTo(state.team ? 'screen-quest' : 'screen-intro');
+    }
+  }
+})();
+</script>
+</body>
+</html>
