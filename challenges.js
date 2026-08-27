@@ -89,15 +89,18 @@ function startCollect(idx){
   hud.style.display = 'block';
   hud.textContent = '0 / ' + total;
 
+  // Alle Splitter ringförmig direkt um den Kristall verteilen, damit sie aus
+  // JEDER Anlaufrichtung sofort sichtbar/erreichbar sind. Erhöhte Splitter
+  // (elevated) liegen im selben Ring, nur höher - dafür ist ein Sprung nötig.
+  const groundCount = total - st.challenge.elevated;
   const groundSpots = [];
-  for(let i=0;i<total - st.challenge.elevated;i++){
-    const a = (Math.random()-0.5)*1.6;
-    groundSpots.push(new THREE.Vector3(Math.sin(a)*2.8, 0.9, 2 + Math.random()*3.2));
+  for(let i=0;i<groundCount;i++){
+    const ang = (i/groundCount) * Math.PI*2;
+    groundSpots.push(new THREE.Vector3(Math.sin(ang)*2.3, 0.9, Math.cos(ang)*2.3));
   }
-  const pedestals = grp.userData.pedestals || [];
   for(let i=0;i<st.challenge.elevated;i++){
-    const ped = pedestals[i % pedestals.length];
-    if(ped) groundSpots.push(new THREE.Vector3(ped.position.x, 2.0, ped.position.z));
+    const ang = ((groundCount+i)/total) * Math.PI*2;
+    groundSpots.push(new THREE.Vector3(Math.sin(ang)*2.3, 1.9, Math.cos(ang)*2.3));
   }
 
   groundSpots.forEach(localPos=>{
@@ -204,6 +207,7 @@ window.FTK_checkCode = function(){
       document.getElementById('modalBackdrop').classList.remove('show');
       window.FTK_world.markCaughtVisual(activeStationIdx);
       window.FTK_world.revealNext();
+      window.FTK_world.growWorld(3);
       showToast(st);
       renderHud();
       if(navigator.vibrate) navigator.vibrate([30,40,30,40,80]);
@@ -221,7 +225,7 @@ window.FTK_checkCode = function(){
 function showToast(st){
   const el = document.getElementById('catchToast');
   document.getElementById('catchToastName').textContent = st.name;
-  document.getElementById('catchToastSub').textContent = 'ist eurer Welt beigetreten';
+  document.getElementById('catchToastSub').textContent = 'ist eurer Welt beigetreten – überall wachsen neue Reben!';
   el.classList.add('show');
   setTimeout(()=> el.classList.remove('show'), 2600);
 }

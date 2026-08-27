@@ -219,6 +219,45 @@ function buildDecor(){
   }
 }
 
+/* Bei jedem gefundenen Traubenwesen wächst irgendwo in der Welt ein neuer
+   Rebstock - die Welt wird spürbar reicher und schöner, je weiter man kommt. */
+function spawnGrapeCluster(){
+  const a = Math.random()*Math.PI*2;
+  const r = 7 + Math.random()*(HALF-11);
+  const grp = new THREE.Group();
+  grp.position.set(Math.cos(a)*r, 0, Math.sin(a)*r);
+  grp.rotation.y = Math.random()*Math.PI*2;
+
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,1.7,6), toonMat(0x8a5a3c));
+  post.position.y = 0.85;
+  grp.add(post);
+
+  const berryColors = [0xff8fd6, 0xf810b1, 0xffe066, 0xc9a4ff];
+  const col = berryColors[Math.floor(Math.random()*berryColors.length)];
+  for(let i=0;i<5;i++){
+    const berry = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22+Math.random()*0.1,0), toonMat(col, {emissive:col, emissiveIntensity:0.3}));
+    berry.position.set((Math.random()-0.5)*0.6, 1.05+Math.random()*0.65, (Math.random()-0.5)*0.4);
+    grp.add(berry);
+  }
+  const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.42,0.16,5), toonMat(0x6bbf59));
+  leaf.position.y = 1.78;
+  leaf.rotation.x = Math.PI;
+  grp.add(leaf);
+
+  grp.scale.setScalar(0.01);
+  scene.add(grp);
+  growingClusters.push({ grp, t:0 });
+}
+const growingClusters = [];
+function updateGrowingClusters(dt){
+  for(let i=growingClusters.length-1;i>=0;i--){
+    const c = growingClusters[i];
+    c.t += dt*1.8;
+    c.grp.scale.setScalar(Math.min(1, c.t));
+    if(c.t >= 1) growingClusters.splice(i,1);
+  }
+}
+
 let altarOrb, altarGlow;
 function buildAltar(){
   const base = new THREE.Mesh(new THREE.CylinderGeometry(2.6,3.2,1.4,8), toonMat(0x9a9a9a));
@@ -577,6 +616,7 @@ function tick(){
   updateAltar();
   updateProximity();
   updateReveals(dt);
+  updateGrowingClusters(dt);
   if(mode === 'challenge' && challengeCtx && challengeCtx.tick) challengeCtx.tick(dt);
   frameCallbacks.forEach(fn => fn(dt));
   renderer.render(scene, camera);
@@ -597,6 +637,7 @@ window.FTK_world = {
   get HALF(){ return HALF; },
   setMode(m, ctx){ mode = m; challengeCtx = ctx || null; },
   revealNext, markCaughtVisual,
+  growWorld(n){ for(let i=0;i<n;i++) spawnGrapeCluster(); },
   onFrame(fn){ frameCallbacks.push(fn); },
   offFrame(fn){ frameCallbacks = frameCallbacks.filter(f => f !== fn); },
   stationWorldPos(i){ const v = new THREE.Vector3(); stationGroups[i].grp.getWorldPosition(v); return v; },

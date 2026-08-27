@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>KI-Weinberg-Quiz: Fake or Real?</title>
+<style>
+  :root{
+    --paper:#f6f1e7;
+    --surface:#fffdf9;
+    --ink:#23262f;
+    --ink-muted:#6b6455;
+    --accent:#f810b1;
+    --accent-soft:#fbe1f2;
+    --rule:#ddd5c5;
+    --chip-bg:#efe8d8;
+    --ok:#1fa66b;
+    --ok-soft:#e1f3ea;
+    --warn:#d1483f;
+    --warn-soft:#fbe6e3;
+    --sky:#f6e4bd;
+    --hill:#8aa06b;
+    --vinewood:#8a6a4f;
+    --leaf:#6b8f47;
+    --grape:#6b2d5c;
+    --grape2:#8a3f75;
+    --sun:#e3a63e;
+    --basket:#b98a55;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1c1b22; --surface:#242229; --ink:#f3ecdf; --ink-muted:#9a9384;
+      --accent:#ff59db; --accent-soft:rgba(248,16,177,0.16); --rule:#3a3742; --chip-bg:#2e2b34;
+      --ok:#3fcf8e; --ok-soft:rgba(63,207,142,0.14); --warn:#ff7a6b; --warn-soft:rgba(255,122,107,0.14);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1c1b22; --surface:#242229; --ink:#f3ecdf; --ink-muted:#9a9384;
+    --accent:#ff59db; --accent-soft:rgba(248,16,177,0.16); --rule:#3a3742; --chip-bg:#2e2b34;
+    --ok:#3fcf8e; --ok-soft:rgba(63,207,142,0.14); --warn:#ff7a6b; --warn-soft:rgba(255,122,107,0.14);
+  }
+  :root[data-theme="light"]{
+    --paper:#f6f1e7; --surface:#fffdf9; --ink:#23262f; --ink-muted:#6b6455;
+    --accent:#f810b1; --accent-soft:#fbe1f2; --rule:#ddd5c5; --chip-bg:#efe8d8;
+    --ok:#1fa66b; --ok-soft:#e1f3ea; --warn:#d1483f; --warn-soft:#fbe6e3;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5; overscroll-behavior:none;
+  }
+  h1,h2,h3,.ui{font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;}
+  .app{max-width:560px; margin:0 auto; min-height:100dvh; display:flex; flex-direction:column;}
+  .screen{display:none; flex:1; flex-direction:column; padding:clamp(20px,6vw,32px) clamp(18px,5vw,26px) 28px;}
+  .screen.active{display:flex;}
+
+  .eyebrow{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 10px;
+  }
+  h1{font-size:clamp(24px,6.5vw,32px); font-weight:700; letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance;}
+  h2{font-size:20px; margin:0 0 10px;}
+  p{margin:0 0 14px; font-size:16px;}
+  .muted{color:var(--ink-muted); font-size:14px;}
+  .spacer{flex:1;}
+  button{font:inherit;}
+  .btn{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:15px; letter-spacing:.02em;
+    border:none; border-radius:14px; padding:16px 20px;
+    background:var(--accent); color:#fff; cursor:pointer;
+    width:100%; text-align:center; box-shadow:0 6px 18px -6px var(--accent);
+  }
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+  .btn.secondary{background:transparent; color:var(--ink); border:1.5px solid var(--rule); box-shadow:none;}
+
+  .cover{
+    border-radius:20px; background:radial-gradient(120% 140% at 30% 10%, var(--accent-soft), transparent 60%), var(--surface);
+    border:1px solid var(--rule); padding:24px; margin-bottom:18px; text-align:center;
+  }
+  .cover .grape{font-size:56px; display:block; margin-bottom:6px;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; justify-content:center;}
+  .chip{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-muted);
+    background:var(--chip-bg); padding:5px 10px; border-radius:999px;
+  }
+  .steps{list-style:none; margin:0 0 6px; padding:0; counter-reset:step;}
+  .steps li{position:relative; padding:2px 0 14px 38px; font-size:15px; counter-increment:step;}
+  .steps li::before{
+    content:counter(step); position:absolute; left:0; top:2px; width:26px; height:26px;
+    border-radius:50%; background:var(--accent-soft); color:var(--accent);
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center;
+  }
+  footer.disclaimer{margin-top:auto; padding-top:18px; text-align:center;}
+  footer.disclaimer a{color:var(--ink-muted); font-size:12px; text-decoration:underline; cursor:pointer;}
+
+  /* progress dots */
+  .progress{display:flex; gap:6px; margin-bottom:16px;}
+  .progress .dot{flex:1; height:5px; border-radius:3px; background:var(--rule);}
+  .progress .dot.done{background:var(--accent);}
+  .progress .dot.now{background:var(--ink);}
+
+  .qtype{
+    display:inline-block; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent); background:var(--accent-soft); padding:4px 10px; border-radius:999px; margin-bottom:10px;
+  }
+  .qprompt{font-size:17px; margin-bottom:16px;}
+
+  .scene{
+    border-radius:16px; overflow:hidden; border:1px solid var(--rule);
+    background:var(--sky); margin-bottom:18px; box-shadow:0 6px 20px -10px rgba(0,0,0,.35);
+  }
+  .scene svg{display:block; width:100%; height:auto;}
+
+  .statement-card{
+    border-radius:16px; border:1px solid var(--rule); background:var(--surface);
+    padding:22px 20px; margin-bottom:18px; text-align:center;
+  }
+  .statement-card q{
+    font-size:19px; font-style:italic; color:var(--ink); quotes:"„" """ "‚" "‘";
+    display:block; text-wrap:balance;
+  }
+
+  .answers{display:flex; flex-direction:column; gap:10px; margin-bottom:14px;}
+  .answer-btn{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:600; font-size:15.5px; text-align:left;
+    border:1.5px solid var(--rule); background:var(--surface); color:var(--ink);
+    border-radius:14px; padding:16px 18px; cursor:pointer; width:100%;
+  }
+  .answer-btn:active{transform:scale(.99);}
+  .answer-btn:focus-visible{outline:3px solid var(--ink); outline-offset:2px;}
+  .answer-btn.correct{border-color:var(--ok); background:var(--ok-soft); color:var(--ink);}
+  .answer-btn.wrong{border-color:var(--warn); background:var(--warn-soft); color:var(--ink);}
+  .answer-btn[disabled]{cursor:default;}
+
+  .feedback-panel{
+    border-radius:14px; padding:14px 16px; margin-bottom:16px; font-size:14.5px; display:none;
+  }
+  .feedback-panel.show{display:block;}
+  .feedback-panel.ok{background:var(--ok-soft); color:var(--ink);}
+  .feedback-panel.err{background:var(--warn-soft); color:var(--ink);}
+  .feedback-panel .lead{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:13px; letter-spacing:.03em; margin-bottom:4px; display:block;
+  }
+  .feedback-panel.ok .lead{color:var(--ok);}
+  .feedback-panel.err .lead{color:var(--warn);}
+
+  .prize{text-align:center; padding:6px 4px 8px;}
+  .prize .big{font-size:56px; display:block; margin-bottom:10px;}
+  .factbox{background:var(--accent-soft); border-radius:14px; padding:16px 18px; font-size:15px; margin:14px 0 18px;}
+  .score-row{
+    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:15px; color:var(--ink-muted); margin-bottom:2px;
+  }
+  .score-num{font-size:44px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- INTRO -->
+  <section id="screen-intro" class="screen active">
+    <div class="cover">
+      <span class="grape">🍇</span>
+      <p class="eyebrow">Futurhinos for Kids · Weinmarkt Schorndorf</p>
+      <h1>KI-Weinberg-Quiz: Fake or Real?</h1>
+      <p style="margin-bottom:0;">Manche Bilder und Aussagen über KI im Weinberg stimmen wirklich &ndash; andere klingen nur echt. Schaut genau hin, hört genau zu und findet heraus: <strong>Echt oder KI-Fehler?</strong></p>
+      <div class="meta-row">
+        <span class="chip">9 Runden</span>
+        <span class="chip">Bilder &amp; Aussagen</span>
+        <span class="chip">Dauer ca. 5 Min.</span>
+      </div>
+    </div>
+    <p class="eyebrow" style="margin-top:6px;">So funktioniert's</p>
+    <ol class="steps">
+      <li>Bei <b>Bild-Runden</b>: Schaut euch die Weinberg-Szene genau an &ndash; ist alles logisch oder hat sich ein KI-Fehler eingeschlichen?</li>
+      <li>Bei <b>Aussage-Runden</b>: Eine Behauptung über KI im Weinberg &ndash; stimmt sie oder ist sie erfunden?</li>
+      <li>Nach jeder Antwort verraten wir euch die Auflösung.</li>
+      <li>Am Ende gibt's euer Ergebnis &ndash; und ein paar echte KI-Fakten aus dem Weinberg.</li>
+    </ol>
+    <div class="spacer"></div>
+    <button class="btn" id="startBtn">Los geht's &rarr;</button>
+    <footer class="disclaimer">
+      <a id="resetLink">Von vorne beginnen</a>
+    </footer>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="screen-question" class="screen">
+    <div class="progress" id="progressDots"></div>
+    <p class="eyebrow" id="qCounter"></p>
+    <span class="qtype" id="qType"></span>
+    <p class="qprompt" id="qPrompt"></p>
+
+    <div class="scene" id="qScene" style="display:none;"></div>
+    <div class="statement-card" id="qStatement" style="display:none;"><q id="qStatementText"></q></div>
+
+    <div class="answers" id="qAnswers"></div>
+
+    <div class="feedback-panel" id="feedbackPanel">
+      <span class="lead" id="feedbackLead"></span>
+      <span id="feedbackText"></span>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="nextBtn" style="display:none;">Weiter &rarr;</button>
+  </section>
+
+  <!-- RESULT -->
+  <section id="screen-result" class="screen">
+    <div class="prize">
+      <span class="big">🍇</span>
+      <p class="eyebrow" style="text-align:center;">Euer Ergebnis</p>
+      <div class="score-row">Richtig erkannt</div>
+      <div class="score-num" id="scoreNum">0 / 9</div>
+      <h2 id="resultTitle" style="margin-top:14px;"></h2>
+      <div class="factbox" id="resultFact"></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="restartBtn">Nochmal spielen &rarr;</button>
+    <footer class="disclaimer">
+      <a id="introLink">Zur Startseite</a>
+    </footer>
+  </section>
+
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ---------- SVG-Bausteine ---------- */
+function grapeBunch(cx, cy, s, color){
+  s = s || 1; color = color || "var(--grape)";
+  const r = 7*s;
+  const rows = [[-1,0,1],[-0.55,0.55],[0]];
+  let y = cy, out = "";
+  rows.forEach(row=>{
+    row.forEach(dx=>{
+      out += '<circle cx="'+(cx+dx*r*1.7)+'" cy="'+y+'" r="'+r+'" fill="'+color+'" opacity="0.94"/>';
+    });
+    y += r*1.55;
+  });
+  return out;
+}
+function stem(x, yTop, yBottom){
+  return '<line x1="'+x+'" y1="'+yTop+'" x2="'+x+'" y2="'+yBottom+'" stroke="var(--vinewood)" stroke-width="2.5" stroke-linecap="round"/>';
+}
+function foliage(cx, cy, s, color){
+  s = s || 1; color = color || "var(--leaf)";
+  const r = 15*s;
+  return '<g opacity="0.92">'
+    + '<ellipse cx="'+(cx-r*0.5)+'" cy="'+cy+'" rx="'+(r*0.65)+'" ry="'+(r*0.5)+'" fill="'+color+'"/>'
+    + '<ellipse cx="'+(cx+r*0.5)+'" cy="'+(cy-r*0.2)+'" rx="'+(r*0.65)+'" ry="'+(r*0.5)+'" fill="'+color+'"/>'
+    + '<ellipse cx="'+cx+'" cy="'+(cy+r*0.3)+'" rx="'+(r*0.7)+'" ry="'+(r*0.55)+'" fill="'+color+'"/>'
+    + '</g>';
+}
+function vineRow(y, x1, x2){
+  return '<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="var(--vinewood)" stroke-width="3" stroke-linecap="round"/>'
+    + '<rect x="'+(x1-4)+'" y="'+(y-2)+'" width="8" height="'+(208-y)+'" fill="var(--vinewood)"/>'
+    + '<rect x="'+(x2-4)+'" y="'+(y-2)+'" width="8" height="'+(208-y)+'" fill="var(--vinewood)"/>';
+}
+function sceneShell(inner){
+  return '<svg viewBox="0 0 320 208" xmlns="http://www.w3.org/2000/svg" role="img">'
+    + '<rect x="0" y="0" width="320" height="208" fill="var(--sky)"/>'
+    + '<path d="M0,175 Q80,150 160,168 T320,160 L320,208 L0,208 Z" fill="var(--hill)" opacity="0.55"/>'
+    + inner
+    + '</svg>';
+}
+
+function sceneVineyardNormal(){
+  let s = '<circle cx="272" cy="38" r="20" fill="var(--sun)"/>';
+  const rowYs = [92, 124, 156];
+  rowYs.forEach(y=>{
+    s += vineRow(y, 26, 296);
+    [70, 150, 230].forEach((x,i)=>{
+      s += foliage(x + (i%2?10:-6), y-6, 1);
+      s += stem(x, y, y+16);
+      s += grapeBunch(x, y+22, 0.85, i%2? "var(--grape2)":"var(--grape)");
+    });
+  });
+  return sceneShell(s);
+}
+
+function sceneHandGlitch(){
+  let s = '<circle cx="252" cy="34" r="16" fill="var(--sun)"/>';
+  s += vineRow(70, 40, 300);
+  [120, 200].forEach((x,i)=>{
+    s += foliage(x, 60, 1);
+    s += stem(x, 70, 88);
+    s += grapeBunch(x, 94, 1, "var(--grape)");
+  });
+  /* Hand mit 6 Fingern */
+  const palmX = 150, palmY = 186;
+  s += '<rect x="'+(palmX-34)+'" y="'+(palmY-28)+'" width="68" height="46" rx="20" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/>';
+  const fingerXs = [palmX-32, palmX-19, palmX-6, palmX+7, palmX+20, palmX+33];
+  fingerXs.forEach(fx=>{
+    s += '<rect x="'+(fx-6)+'" y="'+(palmY-70)+'" width="12" height="46" rx="6" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/>';
+  });
+  return sceneShell(s);
+}
+
+function sceneLabelGlitch(){
+  let s = '<circle cx="270" cy="36" r="14" fill="var(--sun)" opacity="0.7"/>';
+  const bx = 118, by = 30, bw = 60, bh = 150;
+  s += '<rect x="'+(bx+18)+'" y="'+(by-24)+'" width="24" height="30" fill="var(--grape)"/>';
+  s += '<rect x="'+(bx+15)+'" y="'+by+'" width="30" height="14" fill="var(--vinewood)"/>';
+  s += '<rect x="'+bx+'" y="'+(by+10)+'" width="'+bw+'" height="'+bh+'" rx="12" fill="var(--grape)"/>';
+  const lx = bx+8, ly = by+52, lw = bw-16, lh = 66;
+  s += '<rect x="'+lx+'" y="'+ly+'" width="'+lw+'" height="'+lh+'" rx="4" fill="var(--surface)" stroke="var(--rule)"/>';
+  const rows = [[6,10,4,8,3],[9,5,11,4,7],[4,8,3,9,5],[7,4,9,3]];
+  let ry = ly+12;
+  rows.forEach(row=>{
+    let rx = lx+6;
+    row.forEach(w=>{
+      s += '<rect x="'+rx+'" y="'+(ry-3)+'" width="'+w+'" height="6" rx="3" fill="var(--ink-muted)"/>';
+      rx += w+5;
+    });
+    ry += 13;
+  });
+  return sceneShell(s);
+}
+
+function sceneBarrelBaskets(){
+  let s = '<circle cx="270" cy="34" r="14" fill="var(--sun)" opacity="0.7"/>';
+  const cx = 150, cy = 130;
+  s += '<ellipse cx="'+cx+'" cy="'+cy+'" rx="52" ry="58" fill="var(--vinewood)"/>';
+  [-30,-8,14,36].forEach(dy=>{
+    s += '<rect x="'+(cx-52)+'" y="'+(cy+dy-3)+'" width="104" height="6" fill="var(--ink)" opacity="0.55"/>';
+  });
+  s += '<ellipse cx="'+cx+'" cy="'+cy+'" rx="30" ry="56" fill="var(--vinewood)" opacity="0.5"/>';
+
+  [58, 246].forEach(bx=>{
+    s += '<path d="M '+(bx-32)+' 150 L '+(bx+32)+' 150 L '+(bx+22)+' 198 L '+(bx-22)+' 198 Z" fill="var(--basket)" stroke="var(--vinewood)" stroke-width="2"/>';
+    for(let i=-20;i<=20;i+=10){
+      s += '<line x1="'+(bx+i)+'" y1="152" x2="'+(bx+i*0.7)+'" y2="196" stroke="var(--vinewood)" stroke-width="1.5" opacity="0.6"/>';
+    }
+    s += grapeBunch(bx-10, 138, 0.8, "var(--grape)");
+    s += grapeBunch(bx+10, 132, 0.8, "var(--grape2)");
+    s += grapeBunch(bx, 118, 0.8, "var(--grape)");
+  });
+  return sceneShell(s);
+}
+
+function sceneFloatingGrapes(){
+  let s = '<circle cx="266" cy="34" r="16" fill="var(--sun)"/>';
+  const y = 120;
+  s += vineRow(y, 26, 296);
+  [80, 230].forEach(x=>{
+    s += foliage(x, y-8, 1);
+    s += stem(x, y, y+16);
+    s += grapeBunch(x, y+22, 0.85, "var(--grape)");
+  });
+  /* schwebende Traube ohne Stiel */
+  s += grapeBunch(165, 66, 1, "var(--grape2)");
+  s += '<ellipse cx="165" cy="176" rx="20" ry="6" fill="var(--ink)" opacity="0.18"/>';
+  return sceneShell(s);
+}
+
+/* ---------- Quizdaten ---------- */
+const QUESTIONS = [
+  {
+    kind:"bild", type:"Bild-Check", scene:sceneVineyardNormal,
+    prompt:"Reben, Trauben, Sonnenuntergang. Prüft das Bild: Ist alles logisch – oder hat sich ein KI-Fehler eingeschlichen?",
+    answers:[
+      {text:"Sieht normal aus – alles logisch", correct:true},
+      {text:"Da steckt ein KI-Fehler drin!", correct:false}
+    ],
+    explanation:"Hier stimmt wirklich alles: Die Traubenbunde hängen an echten Stielen an der Rebe, die Blätter sitzen dort, wo Blätter wachsen. Kein Fehler versteckt."
+  },
+  {
+    kind:"aussage", type:"Aussage-Check",
+    prompt:"Behauptung:",
+    statement:"KI-gesteuerte Kameras können erkennen, wie reif Weintrauben sind, bevor sie geerntet werden.",
+    answers:[
+      {text:"Stimmt (wahr)", correct:true},
+      {text:"Ist erfunden", correct:false}
+    ],
+    explanation:"Das stimmt! In vielen Weinbergen weltweit messen Kamera- und Sensor-Systeme bereits, wie süß und reif Trauben sind – bevor Menschen überhaupt hingehen."
+  },
+  {
+    kind:"bild", type:"Bild-Check", scene:sceneHandGlitch,
+    prompt:"Schaut euch die Hand an, die nach der Traube greift. Alles normal – oder KI-Fehler?",
+    answers:[
+      {text:"Sieht normal aus – alles logisch", correct:false},
+      {text:"Da steckt ein KI-Fehler drin!", correct:true}
+    ],
+    explanation:"KI-Fehler entdeckt! Zählt mal nach: Die Hand hat sechs Finger. Hände gehören zu den Dingen, bei denen KI-Bilder besonders oft danebenliegen."
+  },
+  {
+    kind:"aussage", type:"Aussage-Check",
+    prompt:"Behauptung:",
+    statement:"Eine KI kann inzwischen einen Wein probieren und genau wie ein Mensch sagen, ob er ihr schmeckt.",
+    answers:[
+      {text:"Stimmt (wahr)", correct:false},
+      {text:"Ist erfunden", correct:true}
+    ],
+    explanation:"Erfunden! Eine KI hat keinen Mund, keine Zunge und keine Geschmacksknospen. Sie kann Messwerte über einen Wein auswerten – aber „schmecken“ wie ein Mensch kann sie nicht."
+  },
+  {
+    kind:"bild", type:"Bild-Check", scene:sceneLabelGlitch,
+    prompt:"Lest ihr das Etikett auf der Flasche? Alles normal – oder KI-Fehler?",
+    answers:[
+      {text:"Sieht normal aus – alles logisch", correct:false},
+      {text:"Da steckt ein KI-Fehler drin!", correct:true}
+    ],
+    explanation:"KI-Fehler entdeckt! Das Etikett sieht aus wie Schrift, ist aber Kauderwelsch – keine echten Wörter. Genau das passiert KI-Bildern oft: Buchstaben, die nur so ähnlich aussehen wie Schrift."
+  },
+  {
+    kind:"aussage", type:"Aussage-Check",
+    prompt:"Behauptung:",
+    statement:"Drohnen mit KI werden genutzt, um kranke oder zu trockene Pflanzen im Weinberg frühzeitig zu erkennen.",
+    answers:[
+      {text:"Stimmt (wahr)", correct:true},
+      {text:"Ist erfunden", correct:false}
+    ],
+    explanation:"Das stimmt! Drohnen fliegen über die Rebzeilen, und eine KI wertet die Bilder aus – so findet man Problemstellen, bevor man sie mit bloßem Auge sieht."
+  },
+  {
+    kind:"bild", type:"Bild-Check", scene:sceneBarrelBaskets,
+    prompt:"Weinfass und Erntekörbe voller Trauben. Alles logisch – oder KI-Fehler?",
+    answers:[
+      {text:"Sieht normal aus – alles logisch", correct:true},
+      {text:"Da steckt ein KI-Fehler drin!", correct:false}
+    ],
+    explanation:"Hier stimmt alles: ein Holzfass mit Metallreifen, Körbe voller frisch geernteter Trauben – ganz normale Weinberg-Ausrüstung."
+  },
+  {
+    kind:"aussage", type:"Aussage-Check",
+    prompt:"Behauptung:",
+    statement:"Ein Roboter kann schon ganz allein einen kompletten Weinberg bepflanzen, ernten und die Trauben pressen – ohne jede Hilfe von Menschen.",
+    answers:[
+      {text:"Stimmt (wahr)", correct:false},
+      {text:"Ist erfunden", correct:true}
+    ],
+    explanation:"Erfunden! Es gibt KI-Helfer für einzelne Schritte wie Erkennen oder Messen. Aber einen Roboter, der einen ganzen Weinberg allein managt, gibt es noch nicht."
+  },
+  {
+    kind:"bild", type:"Bild-Check", scene:sceneFloatingGrapes,
+    prompt:"Letzte Runde: Schaut genau auf die Traube über der Rebzeile. Alles logisch – oder KI-Fehler?",
+    answers:[
+      {text:"Sieht normal aus – alles logisch", correct:false},
+      {text:"Da steckt ein KI-Fehler drin!", correct:true}
+    ],
+    explanation:"KI-Fehler entdeckt! Diese Traube schwebt einfach in der Luft, ganz ohne Stiel, der sie an der Rebe hält. So etwas gibt es in echt nicht – ein typischer Schwebe-Fehler bei KI-Bildern."
+  }
+];
+
+/* ---------- State & Rendering ---------- */
+let idx = 0, score = 0, answered = false;
+
+function goTo(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function renderProgress(){
+  const wrap = document.getElementById("progressDots");
+  wrap.innerHTML = "";
+  QUESTIONS.forEach((_,i)=>{
+    const d = document.createElement("div");
+    d.className = "dot" + (i < idx ? " done" : (i === idx ? " now" : ""));
+    wrap.appendChild(d);
+  });
+}
+
+function showQuestion(){
+  answered = false;
+  const q = QUESTIONS[idx];
+  renderProgress();
+  document.getElementById("qCounter").textContent = "Frage " + (idx+1) + " von " + QUESTIONS.length;
+  document.getElementById("qType").textContent = q.type;
+  document.getElementById("qPrompt").textContent = q.prompt;
+
+  const sceneEl = document.getElementById("qScene");
+  const stmtEl = document.getElementById("qStatement");
+  if(q.kind === "bild"){
+    sceneEl.style.display = "block";
+    sceneEl.innerHTML = q.scene();
+    stmtEl.style.display = "none";
+  } else {
+    stmtEl.style.display = "block";
+    document.getElementById("qStatementText").textContent = q.statement;
+    sceneEl.style.display = "none";
+  }
+
+  const answersEl = document.getElementById("qAnswers");
+  answersEl.innerHTML = "";
+  q.answers.forEach((a, i)=>{
+    const btn = document.createElement("button");
+    btn.className = "answer-btn";
+    btn.textContent = a.text;
+    btn.addEventListener("click", ()=>selectAnswer(i));
+    answersEl.appendChild(btn);
+  });
+
+  document.getElementById("feedbackPanel").className = "feedback-panel";
+  document.getElementById("nextBtn").style.display = "none";
+  goTo("screen-question");
+}
+
+function selectAnswer(i){
+  if(answered) return;
+  answered = true;
+  const q = QUESTIONS[idx];
+  const buttons = Array.from(document.querySelectorAll(".answer-btn"));
+  const isCorrect = q.answers[i].correct;
+  if(isCorrect) score++;
+
+  buttons.forEach((btn, j)=>{
+    btn.disabled = true;
+    if(q.answers[j].correct) btn.classList.add("correct");
+    else if(j === i) btn.classList.add("wrong");
+  });
+
+  const panel = document.getElementById("feedbackPanel");
+  panel.className = "feedback-panel show " + (isCorrect ? "ok" : "err");
+  document.getElementById("feedbackLead").textContent = isCorrect ? "Richtig!" : "Nicht ganz.";
+  document.getElementById("feedbackText").textContent = q.explanation;
+
+  document.getElementById("nextBtn").style.display = "block";
+  if(navigator.vibrate) navigator.vibrate(isCorrect ? 25 : [40,30,40]);
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < QUESTIONS.length) showQuestion();
+  else showResult();
+}
+
+function showResult(){
+  document.getElementById("scoreNum").textContent = score + " / " + QUESTIONS.length;
+  let title, fact;
+  if(score >= 8){
+    title = "Volltreffer!";
+    fact = "Ihr erkennt KI-Tricks richtig gut – ein sicheres Gespür für Fake or Real.";
+  } else if(score >= 5){
+    title = "Stark dabei!";
+    fact = "Ihr habt schon ein gutes Gespür für KI-Fehler entwickelt.";
+  } else {
+    title = "KI kann ganz schön täuschen!";
+    fact = "Beim nächsten Mal schaut ihr bestimmt noch genauer hin. An unserem Stand erklären wir euch gern ein paar Tricks, wie man KI-Fehler erkennt.";
+  }
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultFact").textContent = fact;
+  goTo("screen-result");
+}
+
+function restart(){
+  idx = 0; score = 0; answered = false;
+  showQuestion();
+}
+
+document.getElementById("startBtn").addEventListener("click", ()=>{ idx = 0; score = 0; showQuestion(); });
+document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+document.getElementById("restartBtn").addEventListener("click", restart);
+document.getElementById("resetLink").addEventListener("click", ()=>{ idx = 0; score = 0; goTo("screen-intro"); });
+document.getElementById("introLink").addEventListener("click", ()=>{ goTo("screen-intro"); });
+})();
+</script>
+</body>
+</html>
