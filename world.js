@@ -443,21 +443,21 @@ function playerGroundY(){
 }
 
 function updatePlayer(dt){
-  // Auto-Steuerung: hoch/runter = vor/zurück in Blickrichtung, links/rechts = drehen.
-  // So zeigt "vorwärts" immer genau dorthin, wohin die (hinter dem Spieler
-  // folgende) Kamera gerade schaut - unabhängig davon, wie oft schon gedreht wurde.
-  const throttle = -joyVec.y;
-  const turn = joyVec.x;
-  const speed = 8.5, turnSpeed = 3.4;
-
-  if(Math.abs(turn) > 0.02){
-    player.userData.yaw += turn*turnSpeed*dt;
-  }
-  player.rotation.y = player.userData.yaw;
-
-  if(Math.abs(throttle) > 0.02){
-    const forward = new THREE.Vector3(Math.sin(player.userData.yaw), 0, Math.cos(player.userData.yaw));
-    player.position.addScaledVector(forward, throttle*speed*dt);
+  // Direkte Richtungssteuerung: hoch/runter/links/rechts bewegen die Figur
+  // exakt in diese Bildschirmrichtung. Die Kamera hat einen festen Blickwinkel
+  // (siehe updateCamera) und dreht sich nie mit - dadurch bleiben die Pfeile
+  // immer gleich, egal wohin die Figur gerade schaut.
+  const speed = 8.5;
+  const moveVec = new THREE.Vector3(joyVec.x, 0, joyVec.y);
+  if(moveVec.lengthSq() > 0.0004){
+    if(moveVec.length() > 1) moveVec.normalize();
+    player.position.addScaledVector(moveVec, speed*dt);
+    const targetYaw = Math.atan2(moveVec.x, moveVec.z);
+    let dy = targetYaw - player.userData.yaw;
+    while(dy > Math.PI) dy -= Math.PI*2;
+    while(dy < -Math.PI) dy += Math.PI*2;
+    player.userData.yaw += dy*Math.min(1, dt*14);
+    player.rotation.y = player.userData.yaw;
     player.userData.bob = (player.userData.bob||0) + dt*10;
   }
   player.position.x = Math.max(-HALF, Math.min(HALF, player.position.x));
@@ -490,9 +490,9 @@ function updatePlayer(dt){
 function updateCamera(dt){
   const backDist = 9, height = 5.2;
   const desired = new THREE.Vector3(
-    player.position.x - Math.sin(player.userData.yaw)*backDist,
+    player.position.x,
     player.position.y + height,
-    player.position.z - Math.cos(player.userData.yaw)*backDist
+    player.position.z + backDist
   );
   camera.position.lerp(desired, Math.min(1, dt*4));
   const lookAt = new THREE.Vector3(player.position.x, player.position.y+1, player.position.z);
