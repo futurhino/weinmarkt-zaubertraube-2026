@@ -143,8 +143,20 @@
   #interactBtn{
     position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 118px); transform:translateX(-50%);
     z-index:7; display:none; background:#fff; color:#20232b; border:none; border-radius:999px;
-    padding:12px 20px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
-    font-weight:700; font-size:14px; box-shadow:0 6px 20px rgba(0,0,0,.35); cursor:pointer;
+    padding:14px 22px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:14.5px; box-shadow:0 6px 20px rgba(0,0,0,.35), 0 0 0 rgba(248,16,177,.5);
+    cursor:pointer; animation:btnPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes btnPulse{
+    0%,100%{transform:translateX(-50%) scale(1); box-shadow:0 6px 20px rgba(0,0,0,.35), 0 0 0 rgba(248,16,177,.5);}
+    50%{transform:translateX(-50%) scale(1.055); box-shadow:0 6px 24px rgba(0,0,0,.4), 0 0 18px rgba(248,16,177,.55);}
+  }
+
+  #roamHint{
+    position:absolute; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom,0px) + 118px);
+    z-index:6; display:none; text-align:center; color:#fff; font-size:13.5px; max-width:78vw;
+    text-shadow:0 1px 4px rgba(0,0,0,.55); pointer-events:none;
+    background:rgba(20,15,25,.4); padding:9px 16px; border-radius:999px;
   }
 
   #joyBase{
@@ -263,7 +275,7 @@
     <p class="eyebrow" style="margin-top:6px;">So funktioniert's</p>
     <ol class="steps">
       <li><b>Team-Namen eingeben</b> und den Kristall-Weinberg betreten.</li>
-      <li>Mit dem <b>Steuerkreuz</b> (unten links) zum leuchtenden Element laufen, mit <b>SPRUNG</b> (unten rechts) hüpfen.</li>
+      <li>Mit dem <b>Steuerkreuz</b> (unten links) zum leuchtenden Kristall mit dem „!“ laufen, mit <b>SPRUNG</b> (unten rechts) hüpfen.</li>
       <li>Dort angekommen: eine kleine <b>Herausforderung meistern</b> &ndash; Muster merken, einsammeln oder hochklettern.</li>
       <li>Danach erscheint ein <b>Hinweis</b>: wo versteckt sich das Traubenwesen wirklich, hier auf dem Weinfest?</li>
       <li><b>Hingehen</b>, das Codewort vor Ort finden und im Spiel eingeben.</li>
@@ -300,6 +312,7 @@
     <button id="helpBtn" onclick="document.getElementById('helpBackdrop').classList.add('show')">?</button>
     <p id="challengeHint"></p>
     <p id="challengeCount"></p>
+    <p id="roamHint">✨ Ein Traubenwesen ist zu spüren! Lauft zum leuchtenden Kristall mit dem „!“ darüber.</p>
     <button id="interactBtn"></button>
     <div id="joyBase"><div id="joyNub"></div></div>
     <div id="dpad">

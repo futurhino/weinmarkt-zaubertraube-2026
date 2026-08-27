@@ -255,7 +255,21 @@ function stationPos(i){
   const r = 21;
   return new THREE.Vector3(Math.cos(ang)*r, 0, Math.sin(ang)*r);
 }
+function markerSpriteTexture(){
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = 'rgba(255,255,255,0.95)';
+  g.beginPath(); g.arc(64,58,40,0,Math.PI*2); g.fill();
+  g.fillStyle = '#f810b1';
+  g.font = '700 60px Futura, sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('!', 64, 62);
+  return new THREE.CanvasTexture(c);
+}
+let markerTex;
+
 function buildStationMarkers(){
+  markerTex = markerSpriteTexture();
   STATIONS.forEach((st,i)=>{
     const pos = stationPos(i);
     const grp = new THREE.Group();
@@ -275,11 +289,17 @@ function buildStationMarkers(){
     light.position.y = 1.6;
     grp.add(light);
 
+    const marker = new THREE.Sprite(new THREE.SpriteMaterial({ map: markerTex, depthTest:false }));
+    marker.scale.set(1.1, 1.1, 1);
+    marker.position.y = 2.9;
+    marker.renderOrder = 10;
+    grp.add(marker);
+
     // Deko der Herausforderungs-Arena um die Station
     buildArenaDecor(grp, st);
 
     scene.add(grp);
-    stationGroups.push({ grp, gem, light, base, st, caught:false });
+    stationGroups.push({ grp, gem, light, base, marker, st, caught:false });
   });
 }
 
@@ -312,6 +332,7 @@ function markCaughtVisual(idx){
   const s = stationGroups[idx];
   if(s.caught) return;
   s.caught = true;
+  s.marker.visible = false;
   s.gem.material.color.set(s.st.c2);
   s.gem.material.emissive.set(s.st.c1);
   s.gem.material.emissiveIntensity = 0.6;
@@ -505,22 +526,33 @@ function updateCamera(dt){
    STATIONS-INTERAKTION (Annäherung im Hub)
    ========================================================================= */
 const interactBtn = document.getElementById('interactBtn');
+const roamHint = document.getElementById('roamHint');
 let nearStationIdx = null;
 
 function updateProximity(){
-  if(mode !== 'hub'){ interactBtn.style.display = 'none'; return; }
-  const idx = getCurrentIndex();
-  if(idx >= STATIONS.length){ interactBtn.style.display = 'none'; return; }
-  const s = stationGroups[idx];
-  if(!s.grp.visible || s.caught){ interactBtn.style.display = 'none'; return; }
+  // Marker-Sprite (schwebendes "!") nur über der aktuell aktiven Station zeigen und sanft schweben lassen
+  const t = performance.now()/1000;
+  const activeIdx = getCurrentIndex();
+  stationGroups.forEach((s,i)=>{
+    if(!s.marker) return;
+    s.marker.visible = (i === activeIdx && s.grp.visible && !s.caught);
+    if(s.marker.visible) s.marker.position.y = 2.9 + Math.sin(t*2.4)*0.15;
+  });
+
+  if(mode !== 'hub'){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
+  if(activeIdx >= STATIONS.length){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
+  const s = stationGroups[activeIdx];
+  if(!s.grp.visible || s.caught){ interactBtn.style.display = 'none'; roamHint.style.display = 'none'; return; }
   const d = player.position.distanceTo(s.grp.position);
   if(d < 4.2){
-    nearStationIdx = idx;
+    nearStationIdx = activeIdx;
     interactBtn.style.display = 'block';
-    interactBtn.textContent = '🔮 ' + s.st.challenge.label + ' starten';
+    interactBtn.textContent = '✨ ' + s.st.challenge.label + ' starten';
+    roamHint.style.display = 'none';
   }else{
     nearStationIdx = null;
     interactBtn.style.display = 'none';
+    roamHint.style.display = 'block';
   }
 }
 interactBtn.addEventListener('click', ()=>{
