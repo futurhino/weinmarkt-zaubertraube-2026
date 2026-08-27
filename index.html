@@ -30,17 +30,9 @@
     font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
     line-height:1.5; overscroll-behavior:none; user-select:none;
   }
-  h1,h2,h3,.ui{
-    font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
-  }
-  .app{
-    max-width:560px; margin:0 auto; min-height:100dvh;
-    display:flex; flex-direction:column;
-  }
-  .screen{
-    display:none; flex:1; flex-direction:column;
-    padding:clamp(20px,6vw,32px) clamp(18px,5vw,26px) 28px;
-  }
+  h1,h2,h3,.ui{font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;}
+  .app{max-width:560px; margin:0 auto; min-height:100dvh; display:flex; flex-direction:column;}
+  .screen{display:none; flex:1; flex-direction:column; padding:clamp(20px,6vw,32px) clamp(18px,5vw,26px) 28px;}
   .screen.active{display:flex;}
 
   .eyebrow{
@@ -51,7 +43,6 @@
   h1{font-size:clamp(26px,7vw,34px); font-weight:700; letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance;}
   p{margin:0 0 14px; font-size:16px;}
   .muted{color:var(--ink-muted); font-size:14px;}
-
   .spacer{flex:1;}
   .btn{
     font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
@@ -61,10 +52,7 @@
     width:100%; text-align:center; box-shadow:0 6px 18px -6px var(--accent);
   }
   .btn:active{transform:scale(.98);}
-  .btn.secondary{
-    background:transparent; color:var(--ink); border:1.5px solid var(--rule); box-shadow:none;
-  }
-  .btn[disabled]{opacity:.4; pointer-events:none;}
+  .btn.secondary{background:transparent; color:var(--ink); border:1.5px solid var(--rule); box-shadow:none;}
 
   input[type=text]{
     font-family:inherit; font-size:18px; width:100%; padding:14px 16px;
@@ -78,7 +66,6 @@
     30%,50%,70%{transform:translateX(-8px);} 40%,60%{transform:translateX(8px);}
   }
 
-  /* --- Intro --- */
   .cover{
     border-radius:20px; background:radial-gradient(120% 140% at 30% 10%, var(--accent-soft), transparent 60%), var(--surface);
     border:1px solid var(--rule); padding:24px; margin-bottom:18px; text-align:center;
@@ -91,24 +78,23 @@
     font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-muted);
     background:var(--chip-bg); padding:5px 10px; border-radius:999px;
   }
-
-  /* --- Team setup --- */
   label{
     display:block; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
     font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
     color:var(--ink-muted); margin-bottom:8px;
   }
-
   footer.disclaimer{margin-top:auto; padding-top:18px; text-align:center;}
   footer.disclaimer a{color:var(--ink-muted); font-size:12px; text-decoration:underline;}
 
   /* =========================================================================
-     WELT-BILDSCHIRM
+     3D-WELT
      ========================================================================= */
-  .screen.world{padding:0; position:relative; overflow:hidden;}
+  .screen.world{padding:0; position:relative; overflow:hidden; background:#111;}
+  #c3d{position:absolute; inset:0; width:100%; height:100%; touch-action:none; display:block;}
+
   .world-hud{
     position:absolute; top:0; left:0; right:0; z-index:6;
-    padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 26px;
+    padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 30px;
     background:linear-gradient(to bottom, rgba(20,15,25,.55), transparent);
     color:#fff; pointer-events:none;
   }
@@ -119,20 +105,59 @@
   .world-dots{display:flex; gap:6px;}
   .world-dot{
     width:24px; height:24px; border-radius:8px; background:rgba(255,255,255,.18);
-    border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center;
-    font-size:13px;
+    border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; font-size:13px;
   }
   .world-dot.found{border-color:transparent; background:linear-gradient(145deg, var(--c1), var(--c2)); box-shadow:0 2px 8px -2px rgba(0,0,0,.5);}
 
-  #worldCanvas{display:block; width:100%; height:100%; touch-action:none;}
-
-  .world-hint{
-    position:absolute; left:16px; right:16px; bottom:calc(env(safe-area-inset-bottom,0px) + 16px);
-    z-index:6; text-align:center; color:#fff; font-size:13.5px;
-    text-shadow:0 1px 4px rgba(0,0,0,.55); pointer-events:none; transition:opacity .3s;
+  #challengeHint, #challengeCount{
+    position:absolute; left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top,0px) + 78px);
+    z-index:6; display:none; text-align:center; color:#fff; font-size:13.5px;
+    text-shadow:0 1px 4px rgba(0,0,0,.55); max-width:80vw; pointer-events:none;
+  }
+  #challengeCount{
+    top:calc(env(safe-area-inset-top,0px) + 12px); font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:16px; background:rgba(20,15,25,.5); padding:6px 14px; border-radius:999px;
   }
 
-  /* --- Modal (Fundort-Panel) --- */
+  #interactBtn{
+    position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 118px); transform:translateX(-50%);
+    z-index:7; display:none; background:#fff; color:#20232b; border:none; border-radius:999px;
+    padding:12px 20px; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
+    font-weight:700; font-size:14px; box-shadow:0 6px 20px rgba(0,0,0,.35); cursor:pointer;
+  }
+
+  #joyBase{
+    position:absolute; left:calc(env(safe-area-inset-left,0px) + 22px); bottom:calc(env(safe-area-inset-bottom,0px) + 22px);
+    width:104px; height:104px; border-radius:50%; background:rgba(255,255,255,.16); border:2px solid rgba(255,255,255,.35);
+    z-index:8; touch-action:none;
+  }
+  #joyNub{
+    position:absolute; left:50%; top:50%; width:46px; height:46px; margin:-23px 0 0 -23px;
+    border-radius:50%; background:rgba(255,255,255,.85); box-shadow:0 2px 8px rgba(0,0,0,.3);
+    transition:transform .05s linear; pointer-events:none;
+  }
+  #jumpBtn{
+    position:absolute; right:calc(env(safe-area-inset-right,0px) + 26px); bottom:calc(env(safe-area-inset-bottom,0px) + 30px);
+    width:76px; height:76px; border-radius:50%; background:rgba(248,16,177,.85); border:2px solid rgba(255,255,255,.5);
+    color:#fff; font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif; font-weight:700; font-size:12px;
+    z-index:8; touch-action:none;
+  }
+
+  /* --- Simon-Rätsel Overlay --- */
+  #simonOverlay{
+    position:fixed; inset:0; z-index:50; background:rgba(15,10,20,.82);
+    display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px;
+  }
+  #simonOverlay.show{display:flex;}
+  #simonOverlay h2{color:#fff; font-size:19px; margin:0 0 6px; text-align:center;}
+  #simonStatus{color:#e9dcf3; font-size:14px; margin-bottom:22px; text-align:center; min-height:20px;}
+  .simon-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; width:min(280px,72vw);}
+  .simon-pad{
+    aspect-ratio:1; border-radius:20px; border:none; opacity:.65; transition:opacity .12s, transform .12s;
+  }
+  .simon-pad.lit{opacity:1; transform:scale(1.05); box-shadow:0 0 24px rgba(255,255,255,.6);}
+
+  /* --- Fundort-Panel / Finale (Modal) --- */
   .modal-backdrop{
     position:fixed; inset:0; background:rgba(15,10,18,.62); z-index:30;
     display:none; align-items:flex-end; justify-content:center;
@@ -141,8 +166,7 @@
   .modal-sheet{
     width:100%; max-width:560px; background:var(--paper); border-radius:22px 22px 0 0;
     padding:26px clamp(18px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px);
-    box-shadow:0 -10px 40px rgba(0,0,0,.35);
-    max-height:85vh; overflow-y:auto;
+    box-shadow:0 -10px 40px rgba(0,0,0,.35); max-height:85vh; overflow-y:auto;
   }
   .modal-sheet .count{
     font-family:"Futura","Century Gothic","Avenir Next",ui-sans-serif,sans-serif;
@@ -160,7 +184,6 @@
   }
   details.profi p{margin-top:10px; font-size:14.5px;}
 
-  /* --- Fang-Overlay (Freischalt-Effekt) --- */
   .catch-toast{
     position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-140%);
     background:var(--surface); color:var(--ink); padding:14px 20px; border-radius:16px;
@@ -172,13 +195,10 @@
   .catch-toast .txt b{display:block; font-size:14px;}
   .catch-toast .txt span{font-size:12px; color:var(--ink-muted);}
 
-  /* --- Finale --- */
   .prize{text-align:center; padding:6px 4px 8px;}
   .prize .big{font-size:60px; display:block; margin-bottom:10px;}
   .prize h2{font-size:24px; margin:0 0 8px;}
-  .factbox{
-    background:var(--accent-soft); border-radius:14px; padding:14px 16px; font-size:14.5px; margin:14px 0 18px;
-  }
+  .factbox{background:var(--accent-soft); border-radius:14px; padding:14px 16px; font-size:14.5px; margin:14px 0 18px;}
 </style>
 </head>
 <body>
@@ -190,14 +210,14 @@
       <span class="grape">🍇</span>
       <p class="eyebrow">Futurhinos for Kids · Weinmarkt Schorndorf</p>
       <h1>Das Geheimnis der verschwundenen Zaubertraube</h1>
-      <p style="margin-bottom:0;">Beim letzten Feuerwerk der Weinwochen ist die uralte Zaubertraube, die über den Schorndorfer Weinbergen wacht, vor Schreck in tausend funkelnde Splitter zersprungen. Die Splitter haben sich in kleine <strong>Traubenwesen</strong> verwandelt &ndash; ihr könnt sie in eurer magischen Weinberg-Welt spüren, doch wirklich finden könnt ihr sie nur da draußen, mitten auf dem Weinfest.</p>
+      <p style="margin-bottom:0;">Beim letzten Feuerwerk der Weinwochen ist die uralte Zaubertraube, die über den Schorndorfer Weinbergen wacht, vor Schreck in tausend funkelnde Splitter zersprungen. Die Splitter haben sich in kleine <strong>Traubenwesen</strong> verwandelt &ndash; ihr könnt sie in eurer 3D-Weinberg-Welt spüren, doch wirklich finden könnt ihr sie nur da draußen, mitten auf dem Weinfest.</p>
       <div class="meta-row">
         <span class="chip">Ab 5 Jahren, mit den Eltern</span>
         <span class="chip">Auch für Große spannend</span>
         <span class="chip">Dauer ca. 30&ndash;45 Min.</span>
       </div>
     </div>
-    <p>Euer Team pflegt einen kleinen <strong>Zaubertraube-Altar</strong> in einer eigenen kleinen Welt. Jedes Traubenwesen, das ihr in echt am Marktplatz aufspürt, zieht dort als leuchtendes Element ein &ndash; bis die Zaubertraube wieder vollständig ist.</p>
+    <p>Euer Entdecker lebt im <strong>Kristall-Weinberg</strong> &ndash; einer kleinen, begehbaren 3D-Welt. An jeder Stelle wartet erst eine kleine Herausforderung: ein Merk-Rätsel, eine Sammel-Aufgabe oder ein kniffliger Sprung-Parcours. Erst wer sie meistert, erfährt, wo sich das Traubenwesen in echt auf dem Weinfest versteckt.</p>
     <div class="spacer"></div>
     <button class="btn" onclick="goTo('screen-team')">Wir sind dabei &rarr;</button>
     <p class="muted" style="text-align:center;margin-top:12px;">Ticket 5&nbsp;€ pro Team, erhältlich an unserem Stand.</p>
@@ -214,22 +234,38 @@
     <label for="teamInput">Team-Name</label>
     <input type="text" id="teamInput" placeholder="z. B. Die wilden Traubenjäger" maxlength="40" autocomplete="off">
     <div class="spacer"></div>
-    <button class="btn" onclick="confirmTeam()">Weinberg-Welt betreten &rarr;</button>
+    <button class="btn" onclick="confirmTeam()">Kristall-Weinberg betreten &rarr;</button>
   </section>
 
-  <!-- WELT -->
+  <!-- 3D-WELT -->
   <section id="screen-world" class="screen world">
-    <canvas id="worldCanvas"></canvas>
+    <canvas id="c3d"></canvas>
     <div class="world-hud">
       <div class="team" id="worldTeamLabel"></div>
       <div class="world-dots" id="worldDots"></div>
     </div>
-    <p class="world-hint" id="worldHint">Tippt auf den Weg, um loszulaufen.</p>
+    <p id="challengeHint"></p>
+    <p id="challengeCount"></p>
+    <button id="interactBtn"></button>
+    <div id="joyBase"><div id="joyNub"></div></div>
+    <button id="jumpBtn">SPRUNG</button>
   </section>
 
 </div>
 
-<!-- MODAL: Fundort-Panel -->
+<!-- Simon-Merk-Rätsel -->
+<div id="simonOverlay">
+  <h2 id="simonTitle"></h2>
+  <p id="simonStatus"></p>
+  <div class="simon-grid">
+    <button class="simon-pad" data-i="0"></button>
+    <button class="simon-pad" data-i="1"></button>
+    <button class="simon-pad" data-i="2"></button>
+    <button class="simon-pad" data-i="3"></button>
+  </div>
+</div>
+
+<!-- Fundort-Panel -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-sheet">
     <div class="count" id="modalCount"></div>
@@ -242,16 +278,16 @@
     <label for="codeInput">Codewort am Fundort eingeben</label>
     <input type="text" id="codeInput" placeholder="Codewort" autocomplete="off" autocapitalize="characters">
     <div class="feedback" id="codeFeedback"></div>
-    <button class="btn" onclick="checkCode()">Element ins Spiel holen</button>
+    <button class="btn" onclick="FTK_checkCode()">Element ins Spiel holen</button>
   </div>
 </div>
 
 <div class="catch-toast" id="catchToast">
-  <span class="emoji" id="catchToastEmoji">🍇</span>
-  <span class="txt"><b id="catchToastName"></b><span id="catchToastSub">ist eurer Welt beigetreten</span></span>
+  <span class="emoji">🍇</span>
+  <span class="txt"><b id="catchToastName"></b><span id="catchToastSub"></span></span>
 </div>
 
-<!-- MODAL: Finale -->
+<!-- Finale -->
 <div class="modal-backdrop" id="finaleBackdrop">
   <div class="modal-sheet">
     <div class="prize">
@@ -266,571 +302,51 @@
   </div>
 </div>
 
+<script src="three.min.js"></script>
+<script src="world.js"></script>
+<script src="challenges.js"></script>
 <script>
-/* =========================================================================
-   STATIONEN-KONFIGURATION
-   Hier vor Ort in Schorndorf anpassen:
-   - clue: Beschreibung, WO das Traubenwesen zu finden ist (Standort am
-     Oberen Marktplatz). Aktuell mit gängigen Anhaltspunkten (Rathaus,
-     Brunnen, Kirche, Bühne, euer Stand) vorbelegt - bitte heute Abend beim
-     Rundgang auf die tatsächliche Stand-Anordnung prüfen/anpassen.
-   - codeword: Wort, das auf einem kleinen Schild/Aufkleber an genau dieser
-     Stelle steht. Kurz, kindgerecht schreibbar, in Großbuchstaben.
-   - profi: optionaler kniffligerer Zusatz-Hinweis/Fakt für ältere Kinder.
-   ========================================================================= */
-const STATIONS = [
-  {
-    id:'kicher', name:'Kicherbeere', c1:'#ffb3e6', c2:'#f810b1',
-    clue:'Kicherbeere kichert immer dort, wo es nach frisch Gebackenem duftet. Sucht die Stelle, an der der Duft am Marktplatz am stärksten ist – 《Ort: z. B. beim Flammkuchen- oder Waffelstand》.',
-    codeword:'KICHER',
-    profi:'Profi-Frage: Trauben brauchen viel Sonne, um süß zu werden. Was, glaubt ihr, passiert mit dem Zucker in der Traube, wenn daraus Wein wird?',
-    profiFact:'Beim Gären verwandeln winzige Hefepilze den Traubenzucker in Alkohol – ganz ohne Strom oder Computer, ein uralter Bio-Trick.',
-    flavor:'Kicherbeere kullert lachend in euren Korb und zieht als funkelndes Element in eure Welt ein.'
-  },
-  {
-    id:'glitzer', name:'Glitzerkorn', c1:'#ffe066', c2:'#f810b1',
-    clue:'Glitzerkorn liebt alles, was funkelt. Am Marktplatz glitzert nichts so schön wie das Wasser – 《Ort: z. B. am Marktbrunnen》.',
-    codeword:'GLITZER',
-    profi:'Profi-Frage: Manche moderne Weinberge nutzen kleine Sensoren, um zu messen, wie feucht der Boden ist. Warum könnte das hilfreich sein?',
-    profiFact:'So wird nur genau so viel gegossen, wie die Reben wirklich brauchen – das spart Wasser und schont den Boden.',
-    flavor:'Glitzerkorn hinterlässt eine funkelnde Spur bis in euren Weinberg-Altar.'
-  },
-  {
-    id:'nebel', name:'Nebelknospe', c1:'#c9c3ff', c2:'#6f5bd6',
-    clue:'Nebelknospe versteckt sich gern im Schatten der ältesten Mauern. Geht dorthin, wo der Marktplatz am ehrwürdigsten wirkt – 《Ort: z. B. an der Stadtkirche》.',
-    codeword:'NEBEL',
-    profi:'Profi-Frage: Schorndorf feiert seine Weinwochen schon sehr lange. Was, glaubt ihr, hat sich beim Weinmachen in den letzten 100 Jahren am meisten verändert?',
-    profiFact:'Früher wurde fast alles von Hand geerntet und geprüft – heute helfen Maschinen und sogar Kameras dabei, reife Trauben zu erkennen.',
-    flavor:'Nebelknospe löst sich langsam aus dem Schatten und schwebt hinüber in eure Welt.'
-  },
-  {
-    id:'brumm', name:'Brummzweig', c1:'#ffcf8a', c2:'#e0672a',
-    clue:'Brummzweig summt am liebsten dort, wo Musik oder viele Stimmen zu hören sind. Sucht die Bühne oder den lautesten Platz auf dem Fest – 《Ort: z. B. an der Bühne/Musikfläche》.',
-    codeword:'BRUMM',
-    profi:'Profi-Frage: Warum feiern Menschen ein Weinfest überhaupt gemeinsam, statt jeder für sich zuhause?',
-    profiFact:'Ernte und Wein sind seit Jahrhunderten ein Grund für Gemeinschaft – Feste wie dieses verbinden Nachbarschaft, Handwerk und Genuss.',
-    flavor:'Brummzweig brummt aufgeregt, als es merkt, dass es entdeckt wurde – dann fliegt es in euren Altar.'
-  },
-  {
-    id:'mond', name:'Mondperle', c1:'#c7e8ff', c2:'#3a7bd5',
-    clue:'Mondperle mag es hoch hinaus. Schaut an eurem eigenen Stand nach oben, dorthin, wo unser Rhino-Maskottchen zu sehen ist – 《Ort: euer Futurhinos-Stand》.',
-    codeword:'MOND',
-    profi:'Profi-Frage: Unser Rhino-Maskottchen steht für Futurhinos Kids und das Thema Künstliche Intelligenz. Was hat ein Rhino wohl mit KI zu tun?',
-    profiFact:'Nichts direkt – aber genau wie ein Rhino auf den ersten Blick unterschätzt wird, steckt hinter KI oft mehr Verständnis, als man beim ersten Mal denkt.',
-    flavor:'Mondperle schwebt sanft herab, direkt in euren Altar.'
-  },
-  {
-    id:'kern', name:'Kernwächter', c1:'#f810b1', c2:'#4b0f45',
-    clue:'Der Kernwächter ist das Herzstück der Zaubertraube – er versteckt sich nur an eurem eigenen Stand, wo alles begonnen hat. Kommt zurück zu Futurhinos for Kids!',
-    codeword:'KERN',
-    profi:'Letzte Profi-Frage: Was war für euch das kniffligste Rätsel auf dieser Jagd – und warum?',
-    profiFact:'Ihr habt es geschafft, alle fünf Splitter wiederzufinden. Der Kernwächter braucht jetzt nur noch euch, um wieder ganz zu werden.',
-    flavor:'Der Kernwächter leuchtet golden auf – und mit einem letzten Fund ist die Zaubertraube endlich wieder vollständig!'
+  const { state, saveState } = window.FTK;
+
+  function goTo(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   }
-];
-// Feste Positionen im Weinberg (Bruchteile 0..1 der Weltfläche), im Ring um den Altar.
-const RING_ANGLES = [-90, -30, 30, 90, 150, 210];
-
-const STORAGE_KEY = 'ftk_zaubertraube_2026_world';
-let state = loadState();
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return { team:'', caught:[] };
-}
-function saveState(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
-}
-function resetGame(){
-  state = { team:'', caught:[] };
-  saveState();
-  document.getElementById('teamInput').value = '';
-  document.getElementById('codeInput').value = '';
-  document.getElementById('finaleBackdrop').classList.remove('show');
-  document.getElementById('modalBackdrop').classList.remove('show');
-  goTo('screen-intro');
-}
-
-function goTo(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if(id === 'screen-world') requestAnimationFrame(resizeCanvas);
-}
-
-function confirmTeam(){
-  const val = document.getElementById('teamInput').value.trim();
-  if(!val){
-    const el = document.getElementById('teamInput');
-    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
-    el.placeholder = 'Gebt zuerst einen Team-Namen ein...';
-    return;
+  function resetGame(){
+    localStorage.removeItem(window.FTK.STORAGE_KEY);
+    location.reload();
   }
-  state.team = val;
-  saveState();
-  enterWorld();
-}
-
-function getCurrentIndex(){
-  for(let i=0;i<STATIONS.length;i++){ if(!state.caught.includes(STATIONS[i].id)) return i; }
-  return STATIONS.length; // alles gefunden
-}
-
-/* =========================================================================
-   WELT-CANVAS
-   ========================================================================= */
-const canvas = document.getElementById('worldCanvas');
-const ctx = canvas.getContext('2d');
-let cw = 0, ch = 0, dpr = 1;
-let grassPattern = null;
-
-const avatar = { x:0.5, y:0.86, tx:0.5, ty:0.86, moving:false, t:0 };
-let pendingShrine = null;
-let particles = [];
-let fireflies = [];
-let lastTime = 0;
-let currentIndex = 0;
-let modalOpen = false;
-
-function shrinePos(i){
-  const ang = RING_ANGLES[i] * Math.PI/180;
-  const rx = 0.34, ry = 0.24; // elliptisch, an Hochformat angepasst
-  return { x: 0.5 + Math.cos(ang)*rx, y: 0.46 + Math.sin(ang)*ry };
-}
-
-function resizeCanvas(){
-  const rect = canvas.parentElement.getBoundingClientRect();
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  cw = rect.width; ch = rect.height;
-  canvas.width = Math.round(cw*dpr);
-  canvas.height = Math.round(ch*dpr);
-  canvas.style.width = cw+'px';
-  canvas.style.height = ch+'px';
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  buildGrassPattern();
-  if(!fireflies.length){
-    for(let i=0;i<9;i++){
-      fireflies.push({ x:Math.random(), y:Math.random()*0.7+0.05, r:Math.random()*Math.PI*2, sp:0.15+Math.random()*0.2 });
-    }
-  }
-}
-window.addEventListener('resize', resizeCanvas);
-
-function buildGrassPattern(){
-  const tile = document.createElement('canvas');
-  tile.width = 32; tile.height = 32;
-  const tctx = tile.getContext('2d');
-  tctx.fillStyle = '#6bbf59';
-  tctx.fillRect(0,0,32,32);
-  tctx.fillStyle = '#5aab49';
-  for(let i=0;i<10;i++){
-    tctx.fillRect(Math.floor(Math.random()*32), Math.floor(Math.random()*32), 3, 3);
-  }
-  tctx.fillStyle = '#7fcf6a';
-  for(let i=0;i<8;i++){
-    tctx.fillRect(Math.floor(Math.random()*32), Math.floor(Math.random()*32), 2, 2);
-  }
-  grassPattern = ctx.createPattern(tile, 'repeat');
-}
-
-function px(fx,fy){ return { x: fx*cw, y: fy*ch }; }
-
-function drawWorld(ts){
-  const dt = Math.min(0.05, (ts - lastTime)/1000 || 0);
-  lastTime = ts;
-
-  ctx.clearRect(0,0,cw,ch);
-  ctx.fillStyle = grassPattern || '#6bbf59';
-  ctx.fillRect(0,0,cw,ch);
-
-  drawVineRows();
-  drawFireflies(dt);
-  drawAltar();
-  drawShrines();
-  updateAvatar(dt);
-  drawAvatar();
-  updateParticles(dt);
-
-  requestAnimationFrame(drawWorld);
-}
-
-function drawVineRows(){
-  ctx.save();
-  ctx.strokeStyle = 'rgba(120,74,40,0.35)';
-  ctx.lineWidth = Math.max(2, ch*0.006);
-  for(let i=0;i<6;i++){
-    const y = ch*(0.08 + i*0.028);
-    ctx.beginPath();
-    ctx.moveTo(0,y);
-    ctx.lineTo(cw,y - ch*0.01);
-    ctx.stroke();
-  }
-  for(let i=0;i<5;i++){
-    const y = ch*(0.72 + i*0.045);
-    ctx.beginPath();
-    ctx.moveTo(0,y);
-    ctx.lineTo(cw,y + ch*0.01);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function drawFireflies(dt){
-  ctx.save();
-  fireflies.forEach(f=>{
-    f.r += dt*f.sp;
-    const fx = f.x + Math.sin(f.r)*0.03;
-    const fy = f.y + Math.cos(f.r*1.3)*0.02;
-    const p = px(fx,fy);
-    const glow = 0.4 + 0.6*Math.abs(Math.sin(f.r*2));
-    ctx.globalAlpha = glow;
-    ctx.fillStyle = '#fff6c2';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 2.2, 0, Math.PI*2);
-    ctx.fill();
-  });
-  ctx.restore();
-}
-
-function drawAltar(){
-  const p = px(0.5, 0.46);
-  const n = state.caught.length;
-  const frac = n / STATIONS.length;
-  const baseR = Math.min(cw,ch) * 0.09;
-  // Sockel
-  ctx.save();
-  ctx.fillStyle = '#9a9a9a';
-  const bw = baseR*1.7, bh = baseR*0.7;
-  roundRect(p.x-bw/2, p.y+baseR*0.35, bw, bh, 8);
-  ctx.fill();
-  ctx.fillStyle = '#8c8c8c';
-  roundRect(p.x-bw*0.6, p.y+baseR*0.35+bh, bw*1.2, bh*0.5, 6);
-  ctx.fill();
-
-  // Orb
-  const orbR = baseR*(0.55 + 0.55*frac);
-  const t = performance.now()/1000;
-  const pulse = 1 + Math.sin(t*2)*0.04*(0.3+frac);
-  const grd = ctx.createRadialGradient(p.x-orbR*0.3, p.y-orbR*0.3, orbR*0.1, p.x, p.y, orbR*pulse);
-  if(frac === 0){
-    grd.addColorStop(0,'#e8e2d5'); grd.addColorStop(1,'#b9b2a2');
-  }else{
-    grd.addColorStop(0,'#ffe6f7'); grd.addColorStop(0.55,'#f810b1'); grd.addColorStop(1,'#7a0f70');
-  }
-  ctx.globalAlpha = 1;
-  ctx.shadowColor = frac>0 ? 'rgba(248,16,177,0.55)' : 'transparent';
-  ctx.shadowBlur = 18*frac;
-  ctx.fillStyle = grd;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, orbR*pulse, 0, Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
-
-  if(frac >= 1){
-    for(let i=0;i<8;i++){
-      const a = t*1.5 + i*(Math.PI*2/8);
-      const rr = orbR*1.5;
-      ctx.globalAlpha = 0.7;
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(p.x+Math.cos(a)*rr, p.y+Math.sin(a)*rr, 2.4, 0, Math.PI*2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-  ctx.restore();
-}
-
-function roundRect(x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function drawShrines(){
-  currentIndex = getCurrentIndex();
-  const t = performance.now()/1000;
-  for(let i=0;i<STATIONS.length;i++){
-    if(i > currentIndex) continue; // noch nicht "gespürt"
-    const st = STATIONS[i];
-    const fp = shrinePos(i);
-    const p = px(fp.x, fp.y);
-    const caught = state.caught.includes(st.id);
-    const r = Math.min(cw,ch) * 0.05;
-
-    ctx.save();
-    // Sockel
-    ctx.fillStyle = caught ? '#7c4e33' : '#a89f8f';
-    roundRect(p.x-r*0.9, p.y+r*0.5, r*1.8, r*0.6, 5);
-    ctx.fill();
-
-    // Glühen (aktiv, ungefangen)
-    if(!caught){
-      const pulse = 0.5 + 0.5*Math.abs(Math.sin(t*2.2 + i));
-      ctx.globalAlpha = 0.35*pulse;
-      ctx.fillStyle = st.c1;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r*1.6, 0, Math.PI*2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-
-    // Wesen / Kristall
-    const grd = ctx.createRadialGradient(p.x-r*0.3,p.y-r*0.3,r*0.1,p.x,p.y,r);
-    grd.addColorStop(0, st.c1);
-    grd.addColorStop(1, st.c2);
-    ctx.fillStyle = caught ? grd : 'rgba(150,145,135,0.55)';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, r, 0, Math.PI*2);
-    ctx.fill();
-
-    if(caught){
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(p.x-r*0.28,p.y-r*0.12,r*0.14,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(p.x+r*0.28,p.y-r*0.12,r*0.14,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#1a1a1a';
-      ctx.beginPath(); ctx.arc(p.x-r*0.28,p.y-r*0.06,r*0.06,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(p.x+r*0.28,p.y-r*0.06,r*0.06,0,Math.PI*2); ctx.fill();
-    }else{
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.font = (r*0.9)+'px Futura, sans-serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('?', p.x, p.y-r*0.02);
-    }
-    ctx.restore();
-
-    st._screenPos = p; st._r = r; st._caught = caught;
-  }
-}
-
-function updateAvatar(dt){
-  if(avatar.moving){
-    const dx = avatar.tx - avatar.x, dy = avatar.ty - avatar.y;
-    const dist = Math.hypot(dx,dy);
-    const speed = 0.32; // Bruchteile/Sek.
-    const step = speed*dt;
-    if(dist <= step || dist < 0.004){
-      avatar.x = avatar.tx; avatar.y = avatar.ty; avatar.moving = false;
-      if(pendingShrine !== null){
-        const idx = pendingShrine; pendingShrine = null;
-        openShrine(idx);
-      }
-    }else{
-      avatar.x += dx/dist*step;
-      avatar.y += dy/dist*step;
-    }
-    avatar.t += dt*10;
-  }
-}
-
-function drawAvatar(){
-  const p = px(avatar.x, avatar.y);
-  const r = Math.min(cw,ch)*0.028;
-  const bob = avatar.moving ? Math.sin(avatar.t)*r*0.18 : 0;
-  ctx.save();
-  ctx.globalAlpha = 0.25;
-  ctx.fillStyle = '#000';
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y+r*0.9, r*0.8, r*0.28, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.globalAlpha = 1;
-
-  ctx.fillStyle = '#f810b1';
-  ctx.beginPath();
-  ctx.arc(p.x, p.y - bob, r, 0, Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(p.x-r*0.32,p.y-bob-r*0.1,r*0.16,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(p.x+r*0.32,p.y-bob-r*0.1,r*0.16,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(p.x-r*0.32,p.y-bob-r*0.05,r*0.07,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(p.x+r*0.32,p.y-bob-r*0.05,r*0.07,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-}
-
-function updateParticles(dt){
-  ctx.save();
-  particles = particles.filter(pt=>{
-    pt.life -= dt;
-    if(pt.life<=0) return false;
-    pt.x += pt.vx*dt; pt.y += pt.vy*dt;
-    ctx.globalAlpha = Math.max(0, pt.life/pt.maxLife);
-    ctx.fillStyle = pt.color;
-    ctx.beginPath();
-    ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI*2);
-    ctx.fill();
-    return true;
-  });
-  ctx.restore();
-}
-
-function spawnParticles(x,y,color){
-  for(let i=0;i<18;i++){
-    const a = Math.random()*Math.PI*2;
-    const sp = 40 + Math.random()*70;
-    particles.push({
-      x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-      life:0.5+Math.random()*0.3, maxLife:0.8, r:2+Math.random()*2, color
-    });
-  }
-}
-
-/* --- Eingabe: Antippen bewegt / interagiert --- */
-function handlePointer(clientX, clientY){
-  if(modalOpen) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = clientX - rect.left, y = clientY - rect.top;
-  const fx = x/cw, fy = y/ch;
-
-  // Trifft ein sichtbarer Schrein?
-  for(let i=0;i<STATIONS.length;i++){
-    const st = STATIONS[i];
-    if(!st._screenPos || i > currentIndex) continue;
-    const d = Math.hypot(x-st._screenPos.x, y-st._screenPos.y);
-    if(d < st._r*1.8){
-      if(st._caught){
-        showToast(st, true);
-        return;
-      }
-      // Zielpunkt knapp vor dem Schrein anpeilen
-      const dx = fx - avatar.x, dy = fy - avatar.y;
-      const dist = Math.hypot(dx,dy) || 1;
-      const offset = (st._r*2.2)/Math.min(cw,ch);
-      avatar.tx = fx - (dx/dist)*offset;
-      avatar.ty = fy - (dy/dist)*offset;
-      avatar.moving = true;
-      pendingShrine = i;
-      hideHint();
+  function confirmTeam(){
+    const val = document.getElementById('teamInput').value.trim();
+    if(!val){
+      const el = document.getElementById('teamInput');
+      el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      el.placeholder = 'Gebt zuerst einen Team-Namen ein...';
       return;
     }
-  }
-  avatar.tx = Math.min(0.95, Math.max(0.05, fx));
-  avatar.ty = Math.min(0.95, Math.max(0.12, fy));
-  avatar.moving = true;
-  pendingShrine = null;
-}
-canvas.addEventListener('pointerdown', e => handlePointer(e.clientX, e.clientY));
-
-function hideHint(){
-  document.getElementById('worldHint').style.opacity = '0';
-}
-
-/* --- Fundort-Panel --- */
-let activeStationIdx = null;
-function openShrine(i){
-  activeStationIdx = i;
-  const st = STATIONS[i];
-  document.getElementById('modalCount').textContent = 'Traubenwesen ' + (i+1) + ' von ' + STATIONS.length;
-  document.getElementById('modalTitle').textContent = st.name + ' spürt ihr in der Nähe...';
-  document.getElementById('modalClue').textContent = st.clue;
-  document.getElementById('modalProfi').textContent = st.profi + ' ' + st.profiFact;
-  document.getElementById('codeInput').value = '';
-  document.getElementById('codeFeedback').textContent = '';
-  document.getElementById('codeFeedback').className = 'feedback';
-  document.getElementById('profiBox').open = false;
-  modalOpen = true;
-  document.getElementById('modalBackdrop').classList.add('show');
-  setTimeout(()=> document.getElementById('codeInput').focus(), 350);
-}
-function closeModal(){
-  modalOpen = false;
-  document.getElementById('modalBackdrop').classList.remove('show');
-}
-
-function checkCode(){
-  const input = document.getElementById('codeInput');
-  const fb = document.getElementById('codeFeedback');
-  const val = input.value.trim().toUpperCase();
-  const st = STATIONS[activeStationIdx];
-  if(!val){
-    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
-    return;
-  }
-  if(val === st.codeword){
-    fb.textContent = 'Gefunden! ' + st.name + ' zieht in eure Welt ein...';
-    fb.className = 'feedback ok';
-    state.caught.push(st.id);
+    state.team = val;
     saveState();
-    setTimeout(()=>{
-      closeModal();
-      const p = STATIONS[activeStationIdx]._screenPos;
-      if(p) spawnParticles(p.x, p.y, st.c1);
-      showToast(st, false);
-      renderHud();
-      if(navigator.vibrate) navigator.vibrate([30,40,30,40,80]);
-      if(state.caught.length >= STATIONS.length){
-        setTimeout(showFinale, 1400);
-      }else{
-        setTimeout(()=>{ document.getElementById('worldHint').style.opacity = '1'; }, 900);
-      }
-    }, 700);
-  }else{
-    fb.textContent = 'Noch nicht ganz richtig – schaut euch nochmal genau um.';
-    fb.className = 'feedback err';
-    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
-  }
-}
-
-function showToast(st, alreadyCaught){
-  const el = document.getElementById('catchToast');
-  document.getElementById('catchToastEmoji').textContent = '🍇';
-  document.getElementById('catchToastName').textContent = st.name;
-  document.getElementById('catchToastSub').textContent = alreadyCaught ? st.flavor : 'ist eurer Welt beigetreten';
-  el.classList.add('show');
-  setTimeout(()=> el.classList.remove('show'), 2600);
-}
-
-function renderHud(){
-  document.getElementById('worldTeamLabel').textContent = 'Team ' + state.team;
-  const wrap = document.getElementById('worldDots');
-  wrap.innerHTML = '';
-  STATIONS.forEach(st=>{
-    const d = document.createElement('div');
-    const caught = state.caught.includes(st.id);
-    d.className = 'world-dot' + (caught ? ' found' : '');
-    d.style.setProperty('--c1', st.c1);
-    d.style.setProperty('--c2', st.c2);
-    d.textContent = caught ? '🍇' : '';
-    wrap.appendChild(d);
-  });
-  const remaining = STATIONS.length - state.caught.length;
-  const hint = document.getElementById('worldHint');
-  if(remaining > 0){
-    hint.textContent = state.caught.length === 0
-      ? 'Tippt auf das leuchtende Element, um es zu erspüren.'
-      : 'Lauft weiter zum nächsten leuchtenden Punkt!';
-  }
-}
-
-function showFinale(){
-  document.getElementById('finaleTeam').textContent = 'Team ' + state.team + ' hat alle ' + STATIONS.length + ' Traubenwesen gefunden.';
-  document.getElementById('finaleBackdrop').classList.add('show');
-}
-
-function enterWorld(){
-  goTo('screen-world');
-  renderHud();
-  lastTime = performance.now();
-  requestAnimationFrame(t=>{ lastTime = t; requestAnimationFrame(drawWorld); });
-  if(state.caught.length >= STATIONS.length){
-    setTimeout(showFinale, 400);
-  }
-}
-
-/* Bei Wiederaufruf laufenden Stand wiederherstellen */
-(function init(){
-  if(state.team){
-    document.getElementById('teamInput').value = state.team;
     enterWorld();
   }
-})();
+  function enterWorld(){
+    goTo('screen-world');
+    window.FTK_renderHud();
+    window.FTK_world.start();
+    state.caught.forEach((id)=>{
+      const idx = window.FTK.STATIONS.findIndex(s=>s.id===id);
+      if(idx>=0) window.FTK_world.markCaughtVisual(idx);
+    });
+    if(state.caught.length >= window.FTK.STATIONS.length){
+      setTimeout(window.FTK_showFinale, 500);
+    }
+  }
+
+  (function init(){
+    if(state.team){
+      document.getElementById('teamInput').value = state.team;
+      enterWorld();
+    }
+  })();
 </script>
 </body>
 </html>
